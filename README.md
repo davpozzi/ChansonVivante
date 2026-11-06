@@ -80,7 +80,7 @@ La precedente implementazione è conservata in [archive/app_demucs_old.py](archi
 ### Requirements
 
 - Windows for the packaged EXE distribution described below.
-- To run from source: Python and compatible project dependencies, including Flet, PyTorch, SoundFile, Demucs and imageio-ffmpeg.
+- To run from source: Python and compatible project dependencies, including Flet 0.28.3, PyTorch, SoundFile, Demucs and imageio-ffmpeg.
 - FFmpeg is used by Demucs/imageio-ffmpeg for audio operations that require its executable.
 - NVIDIA acceleration requires a PyTorch build compatible with CUDA, as well as a compatible GPU and driver. Having an NVIDIA GPU alone does not guarantee CUDA availability.
 - Without CUDA, or when **CPU-only** is selected, processing runs on the CPU.
