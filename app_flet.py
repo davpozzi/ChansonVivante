@@ -997,16 +997,16 @@ class DemucsApp:
         self.gpu_info = ft.Text("Rilevamento GPU...", color="#94a3b8", size=12)
         self.status_text = ft.Text("Interfaccia pronta · caricamento motore AI...", color="#fbbf24", size=13)
         self.progress = ft.ProgressRing(width=22, height=22, stroke_width=3, visible=False)
-        self.start_button = ft.Button("Avvia separazione", icon=ft.Icons.PLAY_ARROW,
+        self.start_button = ft.ElevatedButton("Avvia separazione", icon=ft.icons.PLAY_ARROW,
             on_click=self._start_clicked, height=48, expand=True,
             style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)))
-        self.logs_button = ft.OutlinedButton("Mostra log", icon=ft.Icons.TERMINAL,
+        self.logs_button = ft.OutlinedButton("Mostra log", icon=ft.icons.TERMINAL,
             on_click=lambda e: self.open_log_window())
 
         card_style = dict(bgcolor="#111a2e", border=ft.border.all(1, "#24324b"),
                           border_radius=18, padding=18)
         header = ft.Row([
-            ft.Container(content=ft.Icon(ft.Icons.GRAPHIC_EQ, size=30, color="#7dd3fc"),
+            ft.Container(content=ft.Icon(ft.icons.GRAPHIC_EQ, size=30, color="#7dd3fc"),
                          bgcolor="#123047", padding=12, border_radius=14),
             ft.Column([
                 ft.Text("ChansonVivante", size=25, weight=ft.FontWeight.BOLD, color="#f8fafc"),
@@ -1020,10 +1020,10 @@ class DemucsApp:
         files = ft.Container(
             content=ft.Column([
                 ft.Text("SORGENTE E DESTINAZIONE", size=11, color="#7dd3fc", weight=ft.FontWeight.BOLD),
-                ft.Row([self.input_field, ft.IconButton(ft.Icons.AUDIO_FILE,
+                ft.Row([self.input_field, ft.IconButton(ft.icons.AUDIO_FILE,
                     tooltip="Scegli file audio", on_click=lambda e: self.input_picker.pick_files(
                     allow_multiple=False, allowed_extensions=["mp3","wav","flac","m4a"]))]),
-                ft.Row([self.output_field, ft.IconButton(ft.Icons.FOLDER_OPEN,
+                ft.Row([self.output_field, ft.IconButton(ft.icons.FOLDER_OPEN,
                     tooltip="Scegli cartella", on_click=lambda e: self.output_picker.get_directory_path())]),
             ], spacing=8), **card_style)
 
@@ -1280,7 +1280,7 @@ async def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.add(ft.Container(
         content=ft.Column([
-            ft.Icon(ft.Icons.GRAPHIC_EQ, size=54, color="#7dd3fc"),
+            ft.Icon(ft.icons.GRAPHIC_EQ, size=54, color="#7dd3fc"),
             ft.Text("ChansonVivante", size=30, weight=ft.FontWeight.BOLD, color="#f8fafc"),
             ft.Text("Preparazione dell'ambiente audio…", color="#94a3b8", size=13),
             ft.ProgressRing(width=24, height=24, stroke_width=3, color="#7dd3fc"),
@@ -1293,4 +1293,4 @@ async def main(page: ft.Page):
     DemucsApp(page)
 
 if __name__ == "__main__":
-    ft.run(main)
+    ft.app(target=main)
