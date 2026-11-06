@@ -514,7 +514,7 @@ class DemucsApp(ctk.CTk):
         self.log_window.geometry("820x480")
         self.log_window.minsize(600, 300)
         self.log_textbox = ctk.CTkTextbox(
-            self.log_window, wrap="word", font=ctk.CTkFont(family="Consolas", size=11)
+            self.log_window, wrap="word", font=("Consolas", 11)
         )
         self.log_textbox.pack(fill="both", expand=True, padx=12, pady=(12, 6))
         self.log_textbox.configure(state="normal")
