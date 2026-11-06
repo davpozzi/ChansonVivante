@@ -301,7 +301,7 @@ class DemucsApp(ctk.CTk):
         opt_shifts.grid(row=1, column=3, padx=8, pady=8, sticky="w")
 
         ctk.CTkLabel(frame_settings, text="Separazione:").grid(
-            row=2, column=0, padx=10, pady=8, sticky="w"
+            row=3, column=0, padx=10, pady=8, sticky="w"
         )
         opt_stems = ctk.CTkOptionMenu(
             frame_settings,
