@@ -20,10 +20,10 @@ class DemucsApp(_DemucsApp):
         page.padding = 0
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.vertical_alignment = ft.MainAxisAlignment.START
-        page.window_width = 820
-        page.window_height = 860
-        page.window_min_width = 740
-        page.window_min_height = 600
+        page.window_width = 900
+        page.window_height = 780
+        page.window_min_width = 840
+        page.window_min_height = 680
         page.window_resizable = True
 
         self.input_file = Value("")
@@ -221,10 +221,10 @@ async def main(page: ft.Page):
     page.padding = 0
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    page.window_width = 820
-    page.window_height = 860
-    page.window_min_width = 740
-    page.window_min_height = 600
+    page.window_width = 900
+    page.window_height = 780
+    page.window_min_width = 840
+    page.window_min_height = 680
     page.window_resizable = True
 
     page.add(
