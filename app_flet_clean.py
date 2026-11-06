@@ -23,7 +23,7 @@ class DemucsApp(_DemucsApp):
         page.window_width = 820
         page.window_height = 860
         page.window_min_width = 740
-        page.window_min_height = 700
+        page.window_min_height = 600
         page.window_resizable = True
 
         self.input_file = Value("")
@@ -192,14 +192,23 @@ class DemucsApp(_DemucsApp):
                 ),
             ],
             spacing=16,
-            scroll=ft.ScrollMode.AUTO,
         )
 
+        # Lo scroll deve appartenere al contenitore che occupa l'area client
+        # della finestra. La Column interna, da sola, non ha un'altezza limitata.
         self.page.add(
-            ft.Container(
-                content=content,
-                width=780,
-                padding=ft.padding.symmetric(horizontal=22, vertical=24),
+            ft.Column(
+                [
+                    ft.Container(
+                        content=content,
+                        width=780,
+                        padding=ft.padding.symmetric(horizontal=22, vertical=24),
+                    )
+                ],
+                expand=True,
+                scroll=ft.ScrollMode.AUTO,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=0,
             )
         )
         self.page.update()
@@ -215,7 +224,7 @@ async def main(page: ft.Page):
     page.window_width = 820
     page.window_height = 860
     page.window_min_width = 740
-    page.window_min_height = 700
+    page.window_min_height = 600
     page.window_resizable = True
 
     page.add(
