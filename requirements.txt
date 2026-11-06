@@ -1,0 +1,10 @@
+# Core application and audio-separation dependencies
+customtkinter
+soundfile
+demucs
+imageio-ffmpeg
+
+# PyTorch is required by Demucs. Install a build compatible with your hardware
+# and CUDA driver first, following https://pytorch.org/get-started/locally/.
+torch
+torchaudio
