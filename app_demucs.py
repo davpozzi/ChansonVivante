@@ -71,9 +71,9 @@ def segment_for_budget(budget_gb):
 
 def available_cuda_memory():
     """Ritorna (memoria libera, totale) in GiB, oppure None se CUDA non è pronta."""
-    if not torch.cuda.is_available():
-        return None
     try:
+        if not torch.cuda.is_available():
+            return None
         free_bytes, total_bytes = torch.cuda.mem_get_info()
         return free_bytes / GB, total_bytes / GB
     except Exception:
@@ -108,7 +108,10 @@ class DemucsApp(ctk.CTk):
 
         self.ui_queue = queue.Queue()
         self.interactive_widgets = []
-        self.has_cuda = bool(torch.cuda.is_available())
+        try:
+            self.has_cuda = bool(torch.cuda.is_available())
+        except Exception:
+            self.has_cuda = False
         self.create_widgets()
         self.refresh_gpu_info()
         self.after(100, self.process_ui_queue)
@@ -438,7 +441,7 @@ class DemucsApp(ctk.CTk):
                 if segment is not None and segment < initial_segment
             ]
 
-        last_oom = None
+        last_oom_message = None
         for segment in attempts:
             try:
                 self.ui_queue.put((
@@ -462,7 +465,7 @@ class DemucsApp(ctk.CTk):
             except Exception as error:
                 if not is_cuda_oom(error):
                     raise
-                last_oom = error
+                last_oom_message = str(error)
                 self.ui_queue.put((
                     "status",
                     "Memoria GPU esaurita: riduco i segmenti e riprovo...",
@@ -475,7 +478,7 @@ class DemucsApp(ctk.CTk):
                 gc.collect()
                 torch.cuda.empty_cache()
 
-        raise last_oom or RuntimeError("Memoria GPU insufficiente.")
+        raise RuntimeError(last_oom_message or "CUDA out of memory: memoria GPU insufficiente.")
 
     def run_demucs_api(self, settings):
         try:
