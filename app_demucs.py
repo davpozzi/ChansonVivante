@@ -161,9 +161,8 @@ class DemucsApp(ctk.CTk):
                 pass
 
         self.input_file = ctk.StringVar()
-        self.output_dir = ctk.StringVar(
-            value=str(Path.home() / "Downloads" / "Output_Audio")
-        )
+        # Per impostazione predefinita, salva direttamente nella cartella del progetto.
+        self.output_dir = ctk.StringVar(value=str(APP_ROOT))
         self.format_var = ctk.StringVar(value="flac")
         self.bit_var = ctk.StringVar(value="16-bit")
         self.model_var = ctk.StringVar(value="htdemucs")
@@ -280,6 +279,17 @@ class DemucsApp(ctk.CTk):
             frame_settings, variable=self.model_var, values=["htdemucs", "htdemucs_ft"]
         )
         opt_model.grid(row=1, column=1, padx=8, pady=8, sticky="w")
+        ctk.CTkLabel(
+            frame_settings,
+            text=(
+                "htdemucs: modello standard, più veloce e consigliato per la maggior parte dei brani. "
+                "htdemucs_ft: versione fine-tuned, può offrire una separazione leggermente migliore, "
+                "ma richiede circa 4 volte più tempo."
+            ),
+            text_color="gray",
+            wraplength=680,
+            justify="left",
+        ).grid(row=2, column=0, columnspan=4, padx=12, pady=(0, 6), sticky="w")
         ctk.CTkLabel(frame_settings, text="Shifts:").grid(
             row=1, column=2, padx=10, pady=8, sticky="w"
         )
@@ -302,7 +312,7 @@ class DemucsApp(ctk.CTk):
             ],
             width=235,
         )
-        opt_stems.grid(row=2, column=1, columnspan=3, padx=8, pady=8, sticky="w")
+        opt_stems.grid(row=3, column=1, columnspan=3, padx=8, pady=8, sticky="w")
 
         self.interactive_widgets.extend(
             [btn_browse_in, btn_browse_out, opt_format, opt_bit, opt_model, opt_shifts, opt_stems]
@@ -931,7 +941,9 @@ class DemucsApp(ctk.CTk):
                 "bits_per_sample": 24 if is_24bit and fmt in ("wav", "flac") else 16,
             }
 
-            final_folder = out_dir / settings["model"] / input_path.stem
+            # Una cartella per brano direttamente nella destinazione scelta:
+            # niente sottocartella aggiuntiva con il nome del modello.
+            final_folder = out_dir / input_path.stem
             final_folder.mkdir(parents=True, exist_ok=True)
 
             if settings["two_stems"]:
