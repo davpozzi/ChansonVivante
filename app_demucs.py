@@ -435,13 +435,16 @@ class DemucsApp(ctk.CTk):
                 elif kind == "status":
                     _, message, color = item
                     self.status_label.configure(text=message, text_color=color)
+                    self.append_log("INFO", message)
                 elif kind == "error":
                     _, message = item
                     self.status_label.configure(text=f"Errore: {message}", text_color="red")
+                    self.append_log("ERROR", message)
                     messagebox.showerror("Errore elaborazione AI", message)
                 elif kind == "done":
                     _, message, folder = item
                     self.status_label.configure(text=message, text_color="green")
+                    self.append_log("SUCCESS", message)
                     if folder and os.name == "nt":
                         try:
                             os.startfile(folder)
