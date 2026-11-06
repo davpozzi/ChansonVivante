@@ -1,4 +1,5 @@
-﻿import gc
+﻿import contextlib
+import gc
 import inspect
 import os
 import queue
@@ -80,6 +81,38 @@ def available_cuda_memory():
         return None
 
 
+
+class QueueLogStream:
+    """Inoltra stdout/stderr al thread GUI senza bloccare l'elaborazione."""
+    def __init__(self, log_queue, level):
+        self.log_queue = log_queue
+        self.level = level
+        self.buffer = ""
+
+    def write(self, text):
+        if not text:
+            return 0
+        self.buffer += str(text)
+        # tqdm usa \r per aggiornare la stessa riga; trattiamo anche \n.
+        while "\n" in self.buffer or "\r" in self.buffer:
+            positions = [p for p in (self.buffer.find("\n"), self.buffer.find("\r")) if p >= 0]
+            pos = min(positions)
+            line = self.buffer[:pos].strip()
+            self.buffer = self.buffer[pos + 1:]
+            if line:
+                self.log_queue.put(("log", self.level, line))
+        return len(text)
+
+    def flush(self):
+        line = self.buffer.strip()
+        if line:
+            self.log_queue.put(("log", self.level, line))
+        self.buffer = ""
+
+    def isatty(self):
+        return False
+
+
 class DemucsApp(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -107,6 +140,9 @@ class DemucsApp(ctk.CTk):
         self.budget_gb = 3.0
 
         self.ui_queue = queue.Queue()
+        self.log_window = None
+        self.log_textbox = None
+        self.log_history = []
         self.interactive_widgets = []
         try:
             self.has_cuda = bool(torch.cuda.is_available())
@@ -258,7 +294,12 @@ class DemucsApp(ctk.CTk):
             height=42,
             command=self.start_thread,
         )
-        self.btn_start.pack(pady=14)
+        self.btn_start.pack(pady=(14, 5))
+
+        self.btn_logs = ctk.CTkButton(
+            self, text="Mostra log", command=self.open_log_window, width=150
+        )
+        self.btn_logs.pack(pady=(0, 10))
 
         ctk.CTkLabel(
             self,
@@ -270,6 +311,53 @@ class DemucsApp(ctk.CTk):
             wraplength=690,
             justify="center",
         ).pack(padx=25, pady=(0, 10))
+
+    def open_log_window(self):
+        """Apre (o riporta in primo piano) la finestra dei log."""
+        if self.log_window is not None and self.log_window.winfo_exists():
+            self.log_window.deiconify()
+            self.log_window.lift()
+            return
+
+        self.log_window = ctk.CTkToplevel(self)
+        self.log_window.title("ChansonsVivante - Log elaborazione")
+        self.log_window.geometry("820x480")
+        self.log_window.minsize(600, 300)
+        self.log_textbox = ctk.CTkTextbox(
+            self.log_window, wrap="word", font=ctk.CTkFont(family="Consolas", size=11)
+        )
+        self.log_textbox.pack(fill="both", expand=True, padx=12, pady=(12, 6))
+        self.log_textbox.configure(state="normal")
+        for level, message in self.log_history:
+            self.log_textbox.insert("end", f"[{level}] {message}\n")
+        self.log_textbox.configure(state="disabled")
+        controls = ctk.CTkFrame(self.log_window, fg_color="transparent")
+        controls.pack(fill="x", padx=12, pady=(0, 12))
+        ctk.CTkButton(controls, text="Svuota log", width=110, command=self.clear_log).pack(side="left")
+        ctk.CTkButton(controls, text="Chiudi", width=90, command=self.log_window.withdraw).pack(side="right")
+        self.log_window.protocol("WM_DELETE_WINDOW", self.log_window.withdraw)
+
+    def append_log(self, level, message):
+        self.log_history.append((level, message))
+        # Evita una crescita illimitata della memoria durante sessioni molto lunghe.
+        if len(self.log_history) > 5000:
+            del self.log_history[:1000]
+        if self.log_textbox is not None and self.log_window is not None:
+            try:
+                if self.log_window.winfo_exists():
+                    self.log_textbox.configure(state="normal")
+                    self.log_textbox.insert("end", f"[{level}] {message}\n")
+                    self.log_textbox.see("end")
+                    self.log_textbox.configure(state="disabled")
+            except Exception:
+                pass
+
+    def clear_log(self):
+        self.log_history.clear()
+        if self.log_textbox is not None:
+            self.log_textbox.configure(state="normal")
+            self.log_textbox.delete("1.0", "end")
+            self.log_textbox.configure(state="disabled")
 
     def refresh_gpu_info(self):
         memory = available_cuda_memory()
@@ -341,7 +429,10 @@ class DemucsApp(ctk.CTk):
             while True:
                 item = self.ui_queue.get_nowait()
                 kind = item[0]
-                if kind == "status":
+                if kind == "log":
+                    _, level, message = item
+                    self.append_log(level, message)
+                elif kind == "status":
                     _, message, color = item
                     self.status_label.configure(text=message, text_color=color)
                 elif kind == "error":
@@ -489,6 +580,18 @@ class DemucsApp(ctk.CTk):
         raise RuntimeError(last_oom_message or "CUDA out of memory: memoria GPU insufficiente.")
 
     def run_demucs_api(self, settings):
+        """Cattura i messaggi stdout/stderr di Demucs e delle librerie usate."""
+        self.ui_queue.put(("log", "INFO", "Avvio elaborazione Demucs."))
+        stdout_stream = QueueLogStream(self.ui_queue, "INFO")
+        stderr_stream = QueueLogStream(self.ui_queue, "WARNING")
+        try:
+            with contextlib.redirect_stdout(stdout_stream), contextlib.redirect_stderr(stderr_stream):
+                self._run_demucs_api_impl(settings)
+        finally:
+            stdout_stream.flush()
+            stderr_stream.flush()
+
+    def _run_demucs_api_impl(self, settings):
         try:
             input_path = Path(settings["input_path"]).resolve()
             out_dir = Path(settings["output_dir"]).resolve()
