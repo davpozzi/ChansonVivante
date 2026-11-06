@@ -37,6 +37,10 @@ Informazioni sul progetto: [www.davidepozzi.it/chansonsvivante](https://www.davi
 
 **Compatibilità dei file:** la finestra di selezione propone MP3, WAV, FLAC e M4A. La lettura è effettuata tramite SoundFile/libsndfile: i formati effettivamente leggibili dipendono dalla versione e dalle capacità della libreria installata. In particolare, il supporto M4A non è garantito.
 
+### Creare una release Windows
+
+Su GitHub apri **Releases → Draft a new release**, crea un tag come `v1.0.0` scegliendo `refactor/modular-startup` come target e pubblica. Il workflow Windows crea sia il setup sia lo ZIP portabile. Istruzioni: [`packaging/README.md`](packaging/README.md).
+
 ### Avvio della versione EXE
 
 1. Estrai tutto il contenuto dello ZIP in una cartella sul computer.
@@ -86,6 +90,10 @@ Il codice applicativo è organizzato nel package `chansonvivante/`: `ui/` contie
 - Without CUDA, or when **CPU-only** is selected, processing runs on the CPU.
 
 **Input compatibility:** the file picker offers MP3, WAV, FLAC and M4A. Audio is read through SoundFile/libsndfile, so the formats that can actually be decoded depend on the installed library version and its enabled codecs. M4A support in particular is not guaranteed.
+
+### Creating a Windows release
+
+On GitHub, open **Releases → Draft a new release**, create a tag such as `v1.0.0` targeting `refactor/modular-startup`, then publish it. The Windows workflow builds the installer and portable ZIP. See [`packaging/README.md`](packaging/README.md).
 
 ### Launching the EXE version
 
