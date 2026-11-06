@@ -15,8 +15,7 @@ class DemucsApp(_DemucsApp):
     def __init__(self, page):
         self.page = page
         page.title = "ChansonVivante"
-        page.theme_mode = ft.ThemeMode.LIGHT
-        page.bgcolor = "#ffffff"
+        page.theme_mode = ft.ThemeMode.SYSTEM
         page.padding = 0
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.vertical_alignment = ft.MainAxisAlignment.START
@@ -47,6 +46,11 @@ class DemucsApp(_DemucsApp):
         self.page.run_task(self._poll_queue)
         self.page.run_task(self._load_ai_after_ui)
 
+    def _model_mode_changed(self, e):
+        # L'interfaccia espone una scelta comprensibile; il backend riceve il nome Demucs.
+        self.model_var.set("htdemucs_ft" if e.control.value == "Approfondita" else "htdemucs")
+        self.page.update()
+
     def _build_ui(self):
         self.input_picker = ft.FilePicker(on_result=self._input_picked)
         self.output_picker = ft.FilePicker(on_result=self._output_picked)
@@ -73,9 +77,9 @@ class DemucsApp(_DemucsApp):
             on_change=lambda e: self.bit_var.set(e.control.value),
         )
         self.model_control = ft.Dropdown(
-            label="Modello", value="htdemucs", expand=True,
-            options=[ft.dropdown.Option(x) for x in ("htdemucs", "htdemucs_ft")],
-            on_change=lambda e: self.model_var.set(e.control.value),
+            label="Modalità", value="Veloce", expand=True,
+            options=[ft.dropdown.Option("Veloce"), ft.dropdown.Option("Approfondita")],
+            on_change=self._model_mode_changed,
         )
         self.shifts_control = ft.Dropdown(
             label="Precisione", value="1 (Standard)", expand=True,
@@ -102,9 +106,9 @@ class DemucsApp(_DemucsApp):
             min=1, max=12, divisions=22, value=3,
             on_change=self._budget_changed, expand=True,
         )
-        self.gpu_info = ft.Text("Rilevamento GPU in corso...", size=12, color="#555555")
+        self.gpu_info = ft.Text("Rilevamento GPU in corso...", size=12)
         self.status_text = ft.Text(
-            "Preparazione del motore audio...", size=13, color="#555555", expand=True
+            "Preparazione del motore audio...", size=13, expand=True
         )
         self.progress = ft.ProgressRing(width=18, height=18, stroke_width=2, visible=False)
         self.start_button = ft.ElevatedButton(
@@ -127,7 +131,7 @@ class DemucsApp(_DemucsApp):
         heading = ft.Column(
             [
                 ft.Text("ChansonVivante", size=25, weight=ft.FontWeight.W_600),
-                ft.Text("Separazione delle tracce audio", size=13, color="#555555"),
+                ft.Text("Separazione delle tracce audio", size=13),
             ],
             spacing=3,
         )
@@ -148,9 +152,10 @@ class DemucsApp(_DemucsApp):
                 ft.Row([self.model_control, self.shifts_control], spacing=12),
                 self.stems_control,
                 ft.Text(
-                    "htdemucs_ft può migliorare leggermente il risultato, ma richiede "
-                    "circa quattro volte il tempo di elaborazione.",
-                    size=12, color="#555555",
+                    "Veloce usa htdemucs, per una separazione più rapida. Approfondita usa "
+                    "htdemucs_ft, che può migliorare leggermente il risultato ma richiede "
+                    "circa quattro volte il tempo.",
+                    size=12,
                 ),
             ],
             spacing=9,
@@ -161,7 +166,7 @@ class DemucsApp(_DemucsApp):
                 ft.Text("GPU", size=16, weight=ft.FontWeight.W_600),
                 ft.Row([self.device_control, self.budget_text], spacing=16),
                 ft.Row(
-                    [self.budget_slider, ft.Text("1–12 GB", size=11, color="#555555")],
+                    [self.budget_slider, ft.Text("1–12 GB", size=11)],
                     spacing=8,
                 ),
                 self.gpu_info,
@@ -172,7 +177,7 @@ class DemucsApp(_DemucsApp):
         content = ft.Column(
             [
                 heading,
-                ft.Divider(height=1, color="#d7d7d7"),
+                ft.Divider(height=1),
                 files_section,
                 ft.Divider(height=1, color="#d7d7d7"),
                 settings_section,
@@ -188,7 +193,7 @@ class DemucsApp(_DemucsApp):
                 ft.Text(
                     "Il budget VRAM è indicativo. La memoria effettivamente disponibile "
                     "dipende anche da Windows e dagli altri programmi in esecuzione.",
-                    size=11, color="#666666",
+                    size=11,
                 ),
             ],
             spacing=16,
@@ -216,8 +221,7 @@ class DemucsApp(_DemucsApp):
 
 async def main(page: ft.Page):
     page.title = "ChansonVivante"
-    page.theme_mode = ft.ThemeMode.LIGHT
-    page.bgcolor = "#ffffff"
+    page.theme_mode = ft.ThemeMode.SYSTEM
     page.padding = 0
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
