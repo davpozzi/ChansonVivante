@@ -21,7 +21,7 @@ Informazioni sul progetto: [www.davidepozzi.it/chansonsvivante](https://www.davi
 - **Separazione:** due tracce (voce e base) oppure quattro stem (voce, batteria, basso e altro).
 - **Accelerazione:** usa CUDA quando disponibile; altrimenti usa la CPU.
 - **Gestione VRAM:** modalità automatica, manuale con slider da 1 a 12 GB, oppure solo CPU. La modalità automatica stima il budget a partire dalla memoria GPU libera. Se si verifica un errore CUDA di memoria, l'app prova segmenti audio progressivamente più corti e infine ripiega sulla CPU.
-- **Interfaccia:** tema scuro e indicatore di attività durante l'elaborazione.
+- **Interfaccia:** GUI desktop nativa Flet, tema scuro e indicatore di attività durante l'elaborazione. Lo splash screen resta visibile per almeno un secondo.
 
 > **Importante sulla VRAM:** il budget impostato è un obiettivo indicativo, non un limite rigido. PyTorch, il modello, il driver, Windows e altri programmi possono occupare memoria aggiuntiva. La segmentazione riduce il fabbisogno, ma non garantisce che ogni modello funzioni su qualsiasi GPU; in caso di memoria insufficiente l'app tenta la CPU, che può essere molto più lenta.
 
@@ -30,7 +30,7 @@ Informazioni sul progetto: [www.davidepozzi.it/chansonsvivante](https://www.davi
 ### Requisiti
 
 - Windows per la distribuzione EXE descritta qui sotto.
-- Per eseguire il sorgente: Python e le dipendenze compatibili con il progetto, tra cui CustomTkinter, PyTorch, SoundFile, Demucs e imageio-ffmpeg.
+- Per eseguire il sorgente: Python e le dipendenze compatibili con il progetto, tra cui Flet, PyTorch, SoundFile, Demucs e imageio-ffmpeg.
 - FFmpeg è utilizzato da Demucs/imageio-ffmpeg per le operazioni audio che ne richiedono l'eseguibile.
 - Per l'accelerazione NVIDIA è necessaria una build di PyTorch compatibile con CUDA, oltre a GPU e driver compatibili. La sola presenza di una GPU NVIDIA non garantisce che CUDA sia disponibile.
 - Senza CUDA, o selezionando **Solo CPU**, l'elaborazione viene eseguita dal processore.
@@ -71,7 +71,7 @@ La precedente implementazione è conservata in [archive/app_demucs_old.py](archi
 - **Separation modes:** two stems (vocals and instrumental) or four stems (vocals, drums, bass and other).
 - **Acceleration:** uses CUDA when available; otherwise it uses the CPU.
 - **VRAM management:** automatic mode, manual mode with a 1–12 GB slider, or CPU-only mode. Automatic mode estimates a budget from currently free GPU memory. If a CUDA out-of-memory error occurs, the app retries with progressively shorter audio segments and finally falls back to the CPU.
-- **Interface:** dark theme and an activity indicator while processing.
+- **Interface:** native Flet desktop GUI, dark theme and activity indicator while processing. The splash screen remains visible for at least one second.
 
 > **VRAM note:** the selected budget is a target, not a hard memory cap. PyTorch, the model, the driver, Windows and other applications may allocate additional memory. Segmentation reduces memory demand but cannot guarantee that every model will run on every GPU. If GPU memory remains insufficient, the app attempts CPU processing, which can be much slower.
 
@@ -80,7 +80,7 @@ La precedente implementazione è conservata in [archive/app_demucs_old.py](archi
 ### Requirements
 
 - Windows for the packaged EXE distribution described below.
-- To run from source: Python and compatible project dependencies, including CustomTkinter, PyTorch, SoundFile, Demucs and imageio-ffmpeg.
+- To run from source: Python and compatible project dependencies, including Flet, PyTorch, SoundFile, Demucs and imageio-ffmpeg.
 - FFmpeg is used by Demucs/imageio-ffmpeg for audio operations that require its executable.
 - NVIDIA acceleration requires a PyTorch build compatible with CUDA, as well as a compatible GPU and driver. Having an NVIDIA GPU alone does not guarantee CUDA availability.
 - Without CUDA, or when **CPU-only** is selected, processing runs on the CPU.
