@@ -119,46 +119,6 @@ class QueueLogStream:
 
 
 class DemucsApp:
-    def __init__(self):
-        super().__init__()
-        self.title("ChansonsVivante Audio Separator")
-        self.geometry("760x790")
-        self.resizable(False, False)
-
-        icon_path = resource_path("logo.ico")
-        if os.path.exists(icon_path):
-            try:
-                self.iconbitmap(icon_path)
-            except Exception:
-                pass
-
-        self.input_file = ctk.StringVar()
-        # Per impostazione predefinita, salva direttamente nella cartella del progetto.
-        self.output_dir = ctk.StringVar(value=str(APP_ROOT))
-        self.format_var = ctk.StringVar(value="flac")
-        self.bit_var = ctk.StringVar(value="16-bit")
-        self.model_var = ctk.StringVar(value="htdemucs")
-        self.stems_var = ctk.StringVar(value="Solo Voce e Base (2 tracce)")
-        self.shifts_var = ctk.StringVar(value="1 (Standard)")
-        self.device_mode_var = ctk.StringVar(value="Automatica")
-        self.budget_gb = 3.0
-
-        self.ui_queue = queue.Queue()
-        self.log_window = None
-        self.log_textbox = None
-        self.log_history = []
-        self.interactive_widgets = []
-        self.has_cuda = False
-        self.ai_ready = False
-        self.create_widgets()
-        self.status_label.configure(
-            text="Interfaccia pronta · caricamento motore AI...",
-            text_color="orange",
-        )
-        self.btn_start.configure(state="disabled")
-        self.after(100, self.process_ui_queue)
-        self.after(150, self.start_ai_dependency_loading)
-
     def load_ai_dependencies_worker(self):
         """Importa le librerie pesanti senza bloccare il thread della GUI."""
         global torch, demucs, sf
