@@ -956,11 +956,11 @@ class DemucsApp:
         page.theme_mode = ft.ThemeMode.DARK
         page.bgcolor = "#0b1020"
         page.padding = 0
-        page.window.width = 900
-        page.window.height = 940
-        page.window.min_width = 760
-        page.window.min_height = 780
-        page.window.resizable = True
+        page.window_width = 900
+        page.window_height = 940
+        page.window_min_width = 760
+        page.window_min_height = 780
+        page.window_resizable = True
         self.input_file = Value("")
         self.output_dir = Value(str(APP_ROOT))
         self.format_var = Value("flac")
