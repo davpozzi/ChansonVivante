@@ -52,7 +52,7 @@ I risultati vengono salvati in una sottocartella con struttura `<destinazione>/<
 
 ### Archivio
 
-Il codice applicativo è organizzato nel package `chansonvivante/`: `ui/` contiene la finestra Flet e `services/` gestisce motore Demucs, modelli, GPU e log. `app_demucs.py` è il punto di ingresso leggero e mostra lo splash prima di importare la UI.
+Il codice applicativo è organizzato nel package `chansonvivante/`: `ui/` contiene la finestra Flet; `services/` separa runtime/configurazione, gestione modelli, pipeline audio/GPU e ponte eventi con la UI. `app_demucs.py` è il punto di ingresso leggero e mostra lo splash prima di importare la UI.
 
 ---
 

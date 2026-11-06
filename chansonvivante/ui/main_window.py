@@ -6,7 +6,7 @@ La finestra Flet gestisce esclusivamente stato e presentazione; il motore Demucs
 import asyncio
 import flet as ft
 
-from chansonvivante.services.demucs_backend import APP_ROOT, Value
+from chansonvivante.services.runtime import APP_ROOT, Value
 from chansonvivante.services.demucs_backend import DemucsBackend
 
 
