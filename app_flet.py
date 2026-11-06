@@ -838,7 +838,6 @@ class DemucsApp:
         self.output_picker.get_directory_path()
 
 async def main(page: ft.Page):
-    started = asyncio.get_running_loop().time()
     page.title = "ChansonVivante"
     page.window_width = 900
     page.window_height = 940
@@ -858,7 +857,7 @@ async def main(page: ft.Page):
         padding=50, bgcolor="#111a2e", border=ft.border.all(1, "#24324b"), border_radius=24
     ))
     page.update()
-    await asyncio.sleep(max(0.0, 1.0 - (asyncio.get_running_loop().time() - started)))
+    await asyncio.sleep(1.0)
     page.clean()
     DemucsApp(page)
 
