@@ -31,6 +31,19 @@ import asyncio
 import flet as ft
 
 
+class Value:
+    def __init__(self, value=""):
+        self.value = value
+    def get(self):
+        return self.value
+    def set(self, value):
+        self.value = value
+
+
+torch = None
+demucs = None
+sf = None
+
 GB = 1024 ** 3
 VRAM_RESERVE_GB = 0.75
 # Retry progressivamente più leggeri. None lascia a Demucs il segmento predefinito.
@@ -978,16 +991,21 @@ class DemucsApp:
         self.output_field = ft.TextField(label="Cartella di destinazione", value=str(APP_ROOT),
             read_only=True, expand=True, border_radius=12)
         self.format_control = ft.Dropdown(label="Formato", value="flac", width=150,
-            options=[ft.dropdown.Option(x) for x in ["flac", "wav", "mp3"]])
+            options=[ft.dropdown.Option(x) for x in ["flac", "wav", "mp3"]],
+            on_change=lambda e: self.format_var.set(e.control.value))
         self.bit_control = ft.Dropdown(label="Qualità", value="16-bit", width=150,
-            options=[ft.dropdown.Option(x) for x in ["16-bit", "24-bit"]])
+            options=[ft.dropdown.Option(x) for x in ["16-bit", "24-bit"]],
+            on_change=lambda e: self.bit_var.set(e.control.value))
         self.model_control = ft.Dropdown(label="Modello AI", value="htdemucs", expand=True,
-            options=[ft.dropdown.Option(x) for x in ["htdemucs", "htdemucs_ft"]])
+            options=[ft.dropdown.Option(x) for x in ["htdemucs", "htdemucs_ft"]],
+            on_change=lambda e: self.model_var.set(e.control.value))
         self.shifts_control = ft.Dropdown(label="Shifts", value="1 (Standard)", width=180,
-            options=[ft.dropdown.Option(x) for x in ["0 (Veloce)", "1 (Standard)", "2 (Preciso)", "3 (Lento)"]])
+            options=[ft.dropdown.Option(x) for x in ["0 (Veloce)", "1 (Standard)", "2 (Preciso)", "3 (Lento)"]],
+            on_change=lambda e: self.shifts_var.set(e.control.value))
         self.stems_control = ft.Dropdown(label="Separazione", value=self.stems_var.get(), expand=True,
             options=[ft.dropdown.Option("Solo Voce e Base (2 tracce)"),
-                     ft.dropdown.Option("Tutti gli strumenti (4 tracce)")])
+                     ft.dropdown.Option("Tutti gli strumenti (4 tracce)")],
+            on_change=lambda e: self.stems_var.set(e.control.value))
         self.device_control = ft.Dropdown(label="Modalità GPU", value="Automatica", width=190,
             options=[ft.dropdown.Option(x) for x in ["Automatica", "Manuale", "Solo CPU"]],
             on_change=self._device_changed)
@@ -999,7 +1017,7 @@ class DemucsApp:
         self.progress = ft.ProgressRing(width=22, height=22, stroke_width=3, visible=False)
         self.start_button = ft.ElevatedButton("Avvia separazione", icon=ft.icons.PLAY_ARROW,
             on_click=self._start_clicked, height=48, expand=True,
-            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)))
+            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)), disabled=True)
         self.logs_button = ft.OutlinedButton("Mostra log", icon=ft.icons.TERMINAL,
             on_click=lambda e: self.open_log_window())
 
