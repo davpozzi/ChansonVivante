@@ -32,6 +32,9 @@ import flet as ft
 
 
 class Value:
+    def __init__(self, value=""):
+        self.value = value
+
     def get(self):
         return self.value
     def set(self, value):
