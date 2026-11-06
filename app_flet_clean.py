@@ -179,11 +179,11 @@ class DemucsApp(_DemucsApp):
                 heading,
                 ft.Divider(height=1),
                 files_section,
-                ft.Divider(height=1, color="#d7d7d7"),
+                ft.Divider(height=1),
                 settings_section,
-                ft.Divider(height=1, color="#d7d7d7"),
+                ft.Divider(height=1),
                 gpu_section,
-                ft.Divider(height=1, color="#d7d7d7"),
+                ft.Divider(height=1),
                 ft.Row([self.progress, self.status_text], spacing=10),
                 ft.Row(
                     [self.start_button, self.logs_button],
@@ -235,7 +235,7 @@ async def main(page: ft.Page):
         ft.Column(
             [
                 ft.Text("ChansonVivante", size=24, weight=ft.FontWeight.W_600),
-                ft.Text("Avvio del motore audio...", size=13, color="#555555"),
+                ft.Text("Avvio del motore audio...", size=13),
                 ft.ProgressRing(width=20, height=20, stroke_width=2),
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
