@@ -36,7 +36,8 @@ jobs:
           app = app_flet_clean.DemucsApp(page)
           assert app.start_button.disabled is True
           assert app.format_control.value == "flac"
-          assert app.model_control.value == "htdemucs"
+          assert app.model_var.get() == "htdemucs"
+          assert app.model_control.value == "Veloce"
           assert app.budget_slider.value == 3
           assert app.input_browse_button.text == "Sfoglia..."
           print("Clean Flet UI controls constructed successfully")
