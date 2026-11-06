@@ -466,6 +466,11 @@ class DemucsApp(ctk.CTk):
                 if not is_cuda_oom(error):
                     raise
                 last_oom_message = str(error)
+                # Rimuove i riferimenti del traceback a tensori/modelli CUDA prima del retry.
+                try:
+                    error.__traceback__ = None
+                except Exception:
+                    pass
                 self.ui_queue.put((
                     "status",
                     "Memoria GPU esaurita: riduco i segmenti e riprovo...",
