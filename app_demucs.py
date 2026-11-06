@@ -927,13 +927,13 @@ class DemucsApp(ctk.CTk):
 
 if __name__ == "__main__":
     try:
-        app = DemucsApp()
-        # La GUI è già visibile: chiudiamo subito lo splash e lasciamo
-        # il caricamento di PyTorch/Demucs al thread dedicato.
+        # Distrugge lo splash prima di creare la root principale:
+        # Tkinter deve associare il default root all'istanza DemucsApp.
         try:
             _splash.destroy()
         except Exception:
             pass
+        app = DemucsApp()
         app.mainloop()
     except Exception:
         try:
