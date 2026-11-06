@@ -27,7 +27,31 @@ os.environ["TRANSFORMERS_CACHE"] = str(APP_MODELS_DIR / "huggingface" / "transfo
 os.environ["XDG_CACHE_HOME"] = str(APP_CACHE_DIR)
 
 import yaml
+import tkinter as tk
 from tkinter import filedialog, messagebox
+
+# Splash leggero: viene mostrato prima di caricare le librerie AI pesanti.
+_splash = tk.Tk()
+_splash.overrideredirect(True)
+_splash.configure(bg="#111111")
+_splash.geometry("420x180")
+_splash.eval("tk::PlaceWindow . center")
+tk.Label(
+    _splash,
+    text="ChansonVivante",
+    bg="#111111",
+    fg="white",
+    font=("Segoe UI", 22, "bold"),
+).pack(pady=(42, 8))
+_splash_status = tk.Label(
+    _splash,
+    text="Avvio applicazione...",
+    bg="#111111",
+    fg="#aaaaaa",
+    font=("Segoe UI", 10),
+)
+_splash_status.pack()
+_splash.update()
 
 # Disattiviamo esplicitamente torchcodec prima di caricare qualsiasi altra cosa.
 os.environ["TORCHAUDIO_USE_TORCHCODEC"] = "0"
@@ -54,6 +78,8 @@ except ImportError:
     raise SystemExit("Errore: il modulo 'imageio-ffmpeg' non è installato.")
 
 
+_splash_status.configure(text="Avvio interfaccia...")
+_splash.update()
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("blue")
 
@@ -817,5 +843,16 @@ class DemucsApp(ctk.CTk):
 
 
 if __name__ == "__main__":
-    app = DemucsApp()
-    app.mainloop()
+    try:
+        app = DemucsApp()
+        try:
+            _splash.destroy()
+        except Exception:
+            pass
+        app.mainloop()
+    except Exception:
+        try:
+            _splash.destroy()
+        except Exception:
+            pass
+        raise
