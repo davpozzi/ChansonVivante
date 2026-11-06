@@ -209,7 +209,9 @@ class DemucsApp(ctk.CTk):
             
             # Impostazioni di esportazione
             kwargs = {
-                "samplerate": sample_rate,
+                # Demucs resamples the input to the model sample rate before returning stems.
+                # The separated tensors must therefore be saved at separator.samplerate.
+                "samplerate": separator.samplerate,
                 "bitrate": 320 if fmt == "mp3" else None,
                 "preset": 2 if fmt == "mp3" else None,
                 "clip": "rescale",
