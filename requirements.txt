@@ -1,5 +1,5 @@
 # Core application and audio-separation dependencies
-flet>=0.28.3
+flet==0.28.3
 soundfile
 demucs
 imageio-ffmpeg
