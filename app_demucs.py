@@ -357,7 +357,7 @@ class DemucsApp(ctk.CTk):
         if not installed:
             install = messagebox.askyesno(
                 "Modello non installato",
-                f"Il modello '{model_name}' non è installato. Vuoi installarlo ora?\\n\\n"
+                f"Il modello '{model_name}' non è installato. Vuoi installarlo ora?\n\n"
                 "Il download verrà mostrato nella finestra dei log."
             )
             if install:
@@ -567,8 +567,8 @@ class DemucsApp(ctk.CTk):
         if not installed:
             install = messagebox.askyesno(
                 "Modello non installato",
-                f"Il modello '{selected_model}' non è installato. Vuoi installarlo ora?\\n\\n"
-                "La separazione partirà dopo il download."
+                f"Il modello '{selected_model}' non è installato. Vuoi installarlo ora?\n\n"
+                "Dopo il download, premi di nuovo 'Avvia separazione'."
             )
             if install:
                 self.start_model_installation(selected_model)
