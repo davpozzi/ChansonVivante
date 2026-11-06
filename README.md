@@ -15,7 +15,7 @@ Informazioni sul progetto: [www.davidepozzi.it/chansonsvivante](https://www.davi
 ### Funzionalità
 
 - **Formati di esportazione:** FLAC, WAV e MP3 a 320 kbps.
-- **Profondità audio:** selezione 16-bit o 24-bit per i formati WAV e FLAC.
+- **Profondità audio:** selezione 16-bit o 24-bit. FLAC usa la profondità selezionata; con l'implementazione attuale, WAV selezionato a 16-bit viene invece scritto come PCM floating-point a 32-bit, mentre WAV 24-bit viene scritto a 24-bit. L'esportazione MP3 usa 320 kbps e non applica la selezione bit-depth.
 - **Modelli AI:** `htdemucs` e `htdemucs_ft`.
 - **Shifts:** da 0 a 3 passaggi di elaborazione.
 - **Separazione:** due tracce (voce e base) oppure quattro stem (voce, batteria, basso e altro).
@@ -55,7 +55,7 @@ I risultati vengono salvati in una sottocartella con struttura `<destinazione>/<
 ### Features
 
 - **Export formats:** FLAC, WAV and MP3 at 320 kbps.
-- **Audio bit depth:** 16-bit or 24-bit selection for WAV and FLAC.
+- **Audio bit depth:** 16-bit or 24-bit selection. FLAC uses the selected bit depth; with the current implementation, WAV selected as 16-bit is written as 32-bit floating-point PCM, while WAV 24-bit is written at 24-bit. MP3 export uses 320 kbps and does not use the bit-depth selection.
 - **AI models:** `htdemucs` and `htdemucs_ft`.
 - **Shifts:** 0 to 3 processing shifts.
 - **Separation modes:** two stems (vocals and instrumental) or four stems (vocals, drums, bass and other).
