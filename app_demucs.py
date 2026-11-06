@@ -1,4 +1,5 @@
 ﻿import gc
+import inspect
 import os
 import queue
 import sys
@@ -420,7 +421,16 @@ class DemucsApp(ctk.CTk):
 
     def separate_with_gpu(self, audio_tensor, sample_rate, settings, budget_gb):
         initial_segment = segment_for_budget(budget_gb)
-        if initial_segment is None:
+        try:
+            supports_segment = "segment" in inspect.signature(demucs.api.Separator).parameters
+        except (TypeError, ValueError):
+            supports_segment = False
+
+        if not supports_segment:
+            # Versioni Demucs meno recenti possono non esporre il parametro segment.
+            # In quel caso evitiamo un TypeError e tentiamo una sola esecuzione standard.
+            attempts = [None]
+        elif initial_segment is None:
             attempts = SEGMENT_RETRY_ORDER
         else:
             attempts = [initial_segment] + [
@@ -438,13 +448,15 @@ class DemucsApp(ctk.CTk):
                     ),
                     "green",
                 ))
-                separator = demucs.api.Separator(
-                    model=settings["model"],
-                    device="cuda",
-                    shifts=settings["shifts"],
-                    overlap=0.25,
-                    segment=segment,
-                )
+                separator_kwargs = {
+                    "model": settings["model"],
+                    "device": "cuda",
+                    "shifts": settings["shifts"],
+                    "overlap": 0.25,
+                }
+                if segment is not None and supports_segment:
+                    separator_kwargs["segment"] = segment
+                separator = demucs.api.Separator(**separator_kwargs)
                 origin, separated = separator.separate_tensor(audio_tensor, sample_rate)
                 return separator, origin, separated
             except Exception as error:
