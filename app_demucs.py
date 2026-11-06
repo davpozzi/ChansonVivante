@@ -1,10 +1,19 @@
-"""Avvio dell'app con splash screen prima di importare il motore audio."""
+"""Entry point leggero: mostra lo splash prima di importare la UI e i servizi."""
 import asyncio
+import sys
+from pathlib import Path
+
 import flet as ft
 
 
+APP_ROOT = (
+    Path(sys.executable).parent.resolve()
+    if getattr(sys, "frozen", False)
+    else Path(__file__).parent.resolve()
+)
+
+
 async def main(page: ft.Page):
-    # Imposta subito i limiti della finestra, già durante lo splash.
     page.title = "ChansonVivante"
     page.theme_mode = ft.ThemeMode.SYSTEM
     page.padding = 0
@@ -13,14 +22,16 @@ async def main(page: ft.Page):
     page.window_min_width = 840
     page.window_min_height = 680
     page.window_resizable = True
+    page.window.icon = str(APP_ROOT / "logo.ico")
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
     page.add(
         ft.Column(
             [
+                ft.Icon(ft.Icons.GRAPHIC_EQ, size=46),
                 ft.Text("ChansonVivante", size=24, weight=ft.FontWeight.W_600),
-                ft.Text("Caricamento del motore audio...", size=13),
+                ft.Text("Preparazione dell'ambiente audio...", size=13),
                 ft.ProgressRing(width=22, height=22, stroke_width=2),
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -29,9 +40,9 @@ async def main(page: ft.Page):
     )
     page.update()
 
-    # Lascia il tempo a Flet di mostrare lo splash prima degli import pesanti.
+    # Yield al renderer: lo splash appare prima di importare i moduli applicativi.
     await asyncio.sleep(0.2)
-    from app_flet_clean import DemucsApp
+    from chansonvivante.ui.main_window import DemucsApp
 
     page.clean()
     DemucsApp(page)

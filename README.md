@@ -52,7 +52,7 @@ I risultati vengono salvati in una sottocartella con struttura `<destinazione>/<
 
 ### Archivio
 
-La precedente implementazione è conservata in [archive/app_demucs_old.py](archive/app_demucs_old.py). Non è il punto di ingresso dell'applicazione attuale.
+Il codice applicativo è organizzato nel package `chansonvivante/`: `ui/` contiene la finestra Flet e `services/` gestisce motore Demucs, modelli, GPU e log. `app_demucs.py` è il punto di ingresso leggero e mostra lo splash prima di importare la UI.
 
 ---
 
@@ -102,4 +102,4 @@ Output files are saved under `<destination>/<model>/<track-name>/`. On Windows, 
 
 ### Archive
 
-The previous implementation is preserved in [archive/app_demucs_old.py](archive/app_demucs_old.py). It is not the current application entry point.
+The application code is organized in the `chansonvivante/` package: `ui/` contains the Flet window and `services/` handles the Demucs engine, models, GPU and logs. `app_demucs.py` is the lightweight entry point and displays the splash before importing the UI.
