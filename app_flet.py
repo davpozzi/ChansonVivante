@@ -837,6 +837,11 @@ class DemucsApp:
 async def main(page: ft.Page):
     started = asyncio.get_running_loop().time()
     page.title = "ChansonVivante"
+    page.window_width = 900
+    page.window_height = 940
+    page.window_min_width = 760
+    page.window_min_height = 780
+    page.window_resizable = True
     page.bgcolor = "#0b1020"
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
