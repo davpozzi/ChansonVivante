@@ -576,14 +576,16 @@ class DemucsApp:
                          color="#a5b4fc"), bgcolor="#24264a", padding=10, border_radius=20)
         ], alignment=ft.MainAxisAlignment.START)
 
+        self.input_browse_button = ft.IconButton(ft.icons.AUDIO_FILE,
+            tooltip="Scegli file audio", on_click=lambda e: self.input_picker.pick_files(
+            allow_multiple=False, allowed_extensions=["mp3", "wav", "flac", "m4a"]))
+        self.output_browse_button = ft.IconButton(ft.icons.FOLDER_OPEN,
+            tooltip="Scegli cartella", on_click=lambda e: self.output_picker.get_directory_path())
         files = ft.Container(
             content=ft.Column([
                 ft.Text("SORGENTE E DESTINAZIONE", size=11, color="#7dd3fc", weight=ft.FontWeight.BOLD),
-                ft.Row([self.input_field, ft.IconButton(ft.icons.AUDIO_FILE,
-                    tooltip="Scegli file audio", on_click=lambda e: self.input_picker.pick_files(
-                    allow_multiple=False, allowed_extensions=["mp3","wav","flac","m4a"]))]),
-                ft.Row([self.output_field, ft.IconButton(ft.icons.FOLDER_OPEN,
-                    tooltip="Scegli cartella", on_click=lambda e: self.output_picker.get_directory_path())]),
+                ft.Row([self.input_field, self.input_browse_button]),
+                ft.Row([self.output_field, self.output_browse_button]),
             ], spacing=8), **card_style)
 
         settings = ft.Container(content=ft.Column([
@@ -819,7 +821,8 @@ class DemucsApp:
         self.start_button.text = "Elaborazione in corso..." if running else "Avvia separazione"
         for control in [self.input_field, self.output_field, self.format_control,
                         self.bit_control, self.model_control, self.shifts_control,
-                        self.stems_control, self.device_control, self.budget_slider]:
+                        self.stems_control, self.device_control, self.budget_slider,
+                        self.input_browse_button, self.output_browse_button]:
             control.disabled = running
         self.progress.visible = running
         self.page.update()
