@@ -442,33 +442,63 @@ class DemucsApp(ctk.CTk):
         ).start()
 
     def install_model_worker(self, model_name):
-        """Scarica e carica il modello in background; Demucs/PyTorch scrivono i log."""
+        """Scarica il modello e registra anche gli errori delle operazioni preliminari."""
         stdout_stream = QueueLogStream(self.ui_queue, "INFO")
         stderr_stream = QueueLogStream(self.ui_queue, "WARNING")
-        self.ui_queue.put(("log", "INFO", f"Verifica e installazione modello: {model_name}"))
-        self.ui_queue.put(("log", "INFO", f"Cache modelli locale: {APP_MODELS_DIR}"))
-        self.ui_queue.put(("log", "INFO", f"Checkpoint Demucs: {Path(torch.hub.get_dir()) / "checkpoints"}"))
         try:
+            # Tutte le operazioni, compresa la preparazione dei percorsi, devono
+            # essere dentro il try: con pythonw.exe gli errori non appaiono in console.
+            self.ui_queue.put(("log", "INFO", f"Avvio installazione modello: {model_name}"))
+            self.ui_queue.put(("log", "INFO", f"Cartella modelli locale: {APP_MODELS_DIR}"))
+
+            checkpoint_dir = Path(torch.hub.get_dir()) / "checkpoints"
+            self.ui_queue.put(("log", "INFO", f"Cartella checkpoint Demucs: {checkpoint_dir}"))
+
             with contextlib.redirect_stdout(stdout_stream), contextlib.redirect_stderr(stderr_stream):
+                self.ui_queue.put(("log", "INFO", "Download e caricamento del modello in corso..."))
                 separator = demucs.api.Separator(
                     model=model_name, device="cpu", shifts=0, overlap=0.25
                 )
                 del separator
                 gc.collect()
-            if not self.is_model_installed(model_name):
+
+            self.ui_queue.put(("log", "INFO", "Download terminato. Verifica dei file..."))
+            checkpoint_paths = self.model_checkpoint_paths(model_name)
+            for checkpoint_path in checkpoint_paths:
+                exists = checkpoint_path.is_file() and checkpoint_path.stat().st_size > 0
+                self.ui_queue.put((
+                    "log",
+                    "INFO" if exists else "ERROR",
+                    f"{'OK' if exists else 'MANCANTE'}: {checkpoint_path}",
+                ))
+
+            if not checkpoint_paths or not self.is_model_installed(model_name):
                 raise RuntimeError(
-                    f"Il download di '{model_name}' è terminato, ma i checkpoint non risultano presenti."
+                    f"Il download di '{model_name}' è terminato, ma uno o più checkpoint "
+                    "non risultano presenti nella cartella locale."
                 )
+
             self.ui_queue.put((
                 "done",
                 f"Modello '{model_name}' installato e pronto.",
                 None,
             ))
         except Exception as error:
-            self.ui_queue.put(("error", f"Installazione di '{model_name}' non riuscita: {error}"))
+            self.ui_queue.put((
+                "error",
+                f"Installazione di '{model_name}' non riuscita: "
+                f"{type(error).__name__}: {error}",
+            ))
         finally:
-            stdout_stream.flush()
-            stderr_stream.flush()
+            try:
+                stdout_stream.flush()
+                stderr_stream.flush()
+            except Exception as log_error:
+                self.ui_queue.put((
+                    "log",
+                    "ERROR",
+                    f"Errore durante la chiusura del log: {log_error}",
+                ))
             self.ui_queue.put(("model_install_finished",))
             self.ui_queue.put(("finished",))
 
