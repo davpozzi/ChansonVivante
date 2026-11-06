@@ -1,48 +1,85 @@
-# 🎵 ChansonsVivante - info: www.davidepozzi.it/chansonsvivante
+# 🎵 ChansonsVivante
 
-🇮🇹 **[Italiano]** | 🇬🇧 **[English]** (Scroll down for English)
+Informazioni sul progetto: [www.davidepozzi.it/chansonsvivante](https://www.davidepozzi.it/chansonsvivante)
+
+🇮🇹 **Italiano** | 🇬🇧 **English**
 
 ---
 
 ## 🇮🇹 Italiano
 
-### 📖 Cos'è questo programma?
-**ChansonsVivante** è un'applicazione basata sull'Intelligenza Artificiale (spinta dal motore open-source *Demucs*) che permette di separare gli elementi di una traccia audio con qualità da studio. Attraverso un'interfaccia grafica intuitiva, puoi isolare la voce dalla base musicale o scomporre un brano nei suoi 4 strumenti principali (Voce, Batteria, Basso, Altro).
+### Cos'è questo programma?
 
-### ✨ Caratteristiche Principali
-*   **Formati Multipli:** Supporto per l'esportazione in formati Lossless (FLAC, WAV a 16-bit o 24-bit) o compressi (MP3 a 320kbps).
-*   **Modelli AI Avanzati:** Scegli tra il modello rapido (`htdemucs`) o la versione "Fine-Tuned" (`htdemucs_ft`) per una qualità vocale superiore con meno artefatti.
-*   **Shifts Personalizzabili:** Aumenta il numero di "Shifts" (passaggi multipli) per ridurre il rumore di fondo e ottenere tracce più pulite.
-*   **Interfaccia Moderna:** Tema scuro, barra di avanzamento in tempo reale e stima del tempo rimanente.
+**ChansonsVivante** è un'applicazione desktop con interfaccia grafica basata sul motore open-source [Demucs](https://github.com/facebookresearch/demucs). Permette di separare una traccia audio nelle sue componenti: voce, batteria, basso e altri strumenti, oppure di ottenere due tracce (voce e base strumentale).
 
-### 🚀 Istruzioni per l'uso
-1. **Estrazione:** Estrai l'intero contenuto del file ZIP in una cartella sul tuo computer. 
-2. **Avvio:** Fai doppio clic sul file `app_demucs.exe` per aprire l'interfaccia.
-   * *⚠️ IMPORTANTE:* Non spostare MAI il file `.exe` fuori dalla sua cartella. Ha bisogno delle librerie `FFmpeg` e della cartella `_internal` presenti accanto ad esso per funzionare. Se vuoi il programma sul Desktop, fai clic destro sull'exe e scegli "Crea collegamento".
-3. **Seleziona la Traccia:** Usa il tasto "Scegli File" per caricare la canzone originale.
-4. **Destinazione:** Scegli la cartella in cui verranno salvati i file separati.
-5. **Impostazioni:** Regola formato, modello e tipo di separazione (2 o 4 tracce).
-6. **Avvia:** Clicca su "Avvia Separazione". Al termine del caricamento, la cartella di destinazione si aprirà in automatico.
+### Funzionalità
 
----
+- **Formati di esportazione:** FLAC, WAV e MP3 a 320 kbps.
+- **Profondità audio:** selezione 16-bit o 24-bit per i formati WAV e FLAC.
+- **Modelli AI:** `htdemucs` e `htdemucs_ft`.
+- **Shifts:** da 0 a 3 passaggi di elaborazione.
+- **Separazione:** due tracce (voce e base) oppure quattro stem (voce, batteria, basso e altro).
+- **Interfaccia:** tema scuro e indicatore di attività durante l'elaborazione.
+
+> **Nota sull'avanzamento:** l'indicatore attuale è indeterminato: segnala che l'elaborazione è in corso, ma non mostra una percentuale effettiva né una stima del tempo rimanente.
+
+### Requisiti
+
+- Windows per la distribuzione EXE descritta qui sotto.
+- Per eseguire il sorgente: Python e le dipendenze compatibili con il progetto, tra cui CustomTkinter, PyTorch, SoundFile, Demucs e imageio-ffmpeg.
+- FFmpeg è utilizzato da Demucs/imageio-ffmpeg per le operazioni audio che ne richiedono l'eseguibile.
+- La disponibilità CUDA dipende da GPU, driver e versione di PyTorch installata. In assenza di CUDA, l'applicazione utilizza la CPU.
+
+**Compatibilità dei file:** la finestra di selezione propone MP3, WAV, FLAC e M4A. La lettura è effettuata tramite SoundFile/libsndfile: i formati effettivamente leggibili dipendono dalla versione e dalle capacità della libreria installata. In particolare, il supporto M4A non è garantito.
+
+### Avvio della versione EXE
+
+1. Estrai tutto il contenuto dello ZIP in una cartella sul computer.
+2. Avvia `app_demucs.exe` da quella cartella.
+3. Non spostare l'EXE fuori dalla cartella estratta: la distribuzione PyInstaller dipende dai file e dalla cartella `_internal` presenti accanto all'eseguibile. Per un collegamento sul Desktop, crea un collegamento all'EXE senza spostarlo.
+4. Seleziona la traccia audio con **Scegli File**.
+5. Scegli la cartella di destinazione con **Scegli Cartella**. Per impostazione predefinita viene usata `Downloads/Output_Audio`.
+6. Seleziona formato, profondità, modello, shifts e modalità di separazione.
+7. Premi **Avvia Separazione**.
+
+I risultati vengono salvati in una sottocartella con struttura `<destinazione>/<modello>/<nome-traccia>/`. Su Windows l'applicazione tenta di aprire automaticamente la cartella al termine dell'elaborazione.
+
 ---
 
 ## 🇬🇧 English
 
-### 📖 What is this software?
-**ChansonsVivante** is an AI-powered application (driven by the open-source *Demucs* engine) that allows you to separate elements of an audio track with studio-grade quality. Through an intuitive graphical interface, you can isolate vocals from the instrumental track or split a song into its 4 main stems (Vocals, Drums, Bass, Other).
+### What is this software?
 
-### ✨ Key Features
-*   **Multiple Formats:** Support for exporting to Lossless formats (FLAC, WAV at 16-bit or 24-bit) or compressed (MP3 at 320kbps).
-*   **Advanced AI Models:** Choose between the fast model (`htdemucs`) or the "Fine-Tuned" version (`htdemucs_ft`) for superior vocal quality with fewer artifacts.
-*   **Customizable Shifts:** Increase the number of "Shifts" (multiple passes) to reduce background noise and get cleaner tracks.
-*   **Modern Interface:** Dark mode UI, real-time progress bar, and ETA calculation.
+**ChansonsVivante** is a desktop application with a graphical interface powered by the open-source [Demucs](https://github.com/facebookresearch/demucs) engine. It separates an audio track into vocals, drums, bass and other instruments, or creates two outputs (vocals and instrumental accompaniment).
 
-### 🚀 How to Use
-1. **Extraction:** Extract the entire contents of the ZIP file to a folder on your computer.
-2. **Launch:** Double-click the `app_demucs.exe` file to open the interface.
-   * *⚠️ IMPORTANT:* NEVER move the `.exe` file out of its folder. It relies on the `FFmpeg` DLLs and the `_internal` folder located right next to it to function properly. If you want the app on your Desktop, right-click the exe and select "Create shortcut".
-3. **Select Track:** Use the "Choose File" button to load the original song.
-4. **Destination:** Choose the folder where the separated files will be saved.
-5. **Settings:** Adjust the format, AI model, and stem separation mode (2 stems or 4 stems).
-6. **Start:** Click "Start Separation". Once the process is complete, the destination folder will open automatically.
+### Features
+
+- **Export formats:** FLAC, WAV and MP3 at 320 kbps.
+- **Audio bit depth:** 16-bit or 24-bit selection for WAV and FLAC.
+- **AI models:** `htdemucs` and `htdemucs_ft`.
+- **Shifts:** 0 to 3 processing shifts.
+- **Separation modes:** two stems (vocals and instrumental) or four stems (vocals, drums, bass and other).
+- **Interface:** dark theme and an activity indicator while processing.
+
+> **Progress note:** the current indicator is indeterminate. It shows that processing is running, but does not report an actual percentage or an estimated time remaining.
+
+### Requirements
+
+- Windows for the packaged EXE distribution described below.
+- To run from source: Python and compatible project dependencies, including CustomTkinter, PyTorch, SoundFile, Demucs and imageio-ffmpeg.
+- FFmpeg is used by Demucs/imageio-ffmpeg for audio operations that require its executable.
+- CUDA availability depends on the GPU, drivers and installed PyTorch build. The application uses the CPU when CUDA is unavailable.
+
+**Input compatibility:** the file picker offers MP3, WAV, FLAC and M4A. Audio is read through SoundFile/libsndfile, so the formats that can actually be decoded depend on the installed library version and its enabled codecs. M4A support in particular is not guaranteed.
+
+### Launching the EXE version
+
+1. Extract the entire ZIP archive into a folder on your computer.
+2. Run `app_demucs.exe` from that folder.
+3. Do not move the EXE out of the extracted folder: the PyInstaller distribution relies on the accompanying files and the `_internal` directory. To place it on the Desktop, create a shortcut instead of moving the executable.
+4. Select the source audio track with **Choose File**.
+5. Select the output folder with **Choose Folder**. The default is `Downloads/Output_Audio`.
+6. Choose the format, bit depth, model, shifts and separation mode.
+7. Click **Start Separation**.
+
+Output files are saved under `<destination>/<model>/<track-name>/`. On Windows, the application attempts to open the output folder when processing finishes.
