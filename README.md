@@ -21,7 +21,7 @@ Informazioni sul progetto: [www.davidepozzi.it/chansonsvivante](https://www.davi
 - **Separazione:** due tracce (voce e base) oppure quattro stem (voce, batteria, basso e altro).
 - **Accelerazione:** usa CUDA quando disponibile; altrimenti usa la CPU.
 - **Gestione VRAM:** modalità automatica, manuale con slider da 1 a 12 GB, oppure solo CPU. La modalità automatica stima il budget a partire dalla memoria GPU libera. Se si verifica un errore CUDA di memoria, l'app prova segmenti audio progressivamente più corti e infine ripiega sulla CPU.
-- **Interfaccia:** GUI desktop nativa Flet, tema scuro e indicatore di attività durante l'elaborazione. Lo splash screen resta visibile per almeno un secondo.
+- **Interfaccia:** GUI desktop nativa Flet, tema scuro e indicatore di attività durante l'elaborazione. Lo splash viene mostrato prima dell'importazione della UI; il motore AI viene caricato in background mentre l'interfaccia è già visibile. L'icona della finestra usa `logo.ico`.
 
 > **Importante sulla VRAM:** il budget impostato è un obiettivo indicativo, non un limite rigido. PyTorch, il modello, il driver, Windows e altri programmi possono occupare memoria aggiuntiva. La segmentazione riduce il fabbisogno, ma non garantisce che ogni modello funzioni su qualsiasi GPU; in caso di memoria insufficiente l'app tenta la CPU, che può essere molto più lenta.
 
@@ -71,7 +71,7 @@ Il codice applicativo è organizzato nel package `chansonvivante/`: `ui/` contie
 - **Separation modes:** two stems (vocals and instrumental) or four stems (vocals, drums, bass and other).
 - **Acceleration:** uses CUDA when available; otherwise it uses the CPU.
 - **VRAM management:** automatic mode, manual mode with a 1–12 GB slider, or CPU-only mode. Automatic mode estimates a budget from currently free GPU memory. If a CUDA out-of-memory error occurs, the app retries with progressively shorter audio segments and finally falls back to the CPU.
-- **Interface:** native Flet desktop GUI, dark theme and activity indicator while processing. The splash screen remains visible for at least one second.
+- **Interface:** native Flet desktop GUI, dark theme and activity indicator while processing. The splash is displayed before the UI is imported; the AI engine loads in the background while the interface is already visible. The window icon uses `logo.ico`.
 
 > **VRAM note:** the selected budget is a target, not a hard memory cap. PyTorch, the model, the driver, Windows and other applications may allocate additional memory. Segmentation reduces memory demand but cannot guarantee that every model will run on every GPU. If GPU memory remains insufficient, the app attempts CPU processing, which can be much slower.
 

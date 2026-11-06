@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/modern-ui-flet
+      - refactor/modular-startup
   pull_request:
     branches:
       - feature/demucs-live-log
@@ -19,7 +20,7 @@ jobs:
       - name: Install UI dependencies
         run: python -m pip install flet==0.28.3 PyYAML
       - name: Compile application
-        run: python -m py_compile app_demucs.py app_flet.py app_flet_clean.py
+        run: python -m py_compile app_demucs.py app_flet.py app_flet_clean.py chansonvivante/__init__.py chansonvivante/services/demucs_backend.py chansonvivante/ui/main_window.py
       - name: Import application and construct Flet controls
         run: |
           python - <<'PY'

@@ -1,7 +1,7 @@
 """Interfaccia desktop essenziale per ChansonVivante, basata su controlli Flet nativi.
 
-La logica Demucs resta nella classe base di app_flet.py: qui vengono ridefiniti
-soltanto l'inizializzazione della pagina e la presentazione.
+La finestra Flet gestisce esclusivamente stato e presentazione; il motore Demucs
+è fornito dai servizi applicativi.
 """
 import asyncio
 import flet as ft
