@@ -1,0 +1,41 @@
+name: Validate Flet migration
+
+on:
+  push:
+    branches:
+      - feature/modern-ui-flet
+  pull_request:
+    branches:
+      - feature/demucs-live-log
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install UI dependencies
+        run: python -m pip install flet==0.28.3 PyYAML
+      - name: Compile application
+        run: python -m py_compile app_demucs.py app_flet.py
+      - name: Import application and construct Flet controls
+        run: |
+          python - <<'PY'
+          from types import SimpleNamespace
+          import app_flet
+
+          class FakePage(SimpleNamespace):
+              def add(self, *controls): pass
+              def update(self): pass
+              def run_task(self, handler, *args): pass
+
+          page = FakePage(overlay=[])
+          app = app_flet.DemucsApp(page)
+          assert app.start_button.disabled is True
+          assert app.format_control.value == "flac"
+          assert app.model_control.value == "htdemucs"
+          assert app.budget_slider.value == 3
+          print("Flet UI controls constructed successfully")
+          PY
