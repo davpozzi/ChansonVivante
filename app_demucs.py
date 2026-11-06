@@ -8,6 +8,24 @@ import threading
 from pathlib import Path
 from urllib.parse import urlparse
 
+# Tutti i dati scaricati durante l'esecuzione devono restare dentro ChansonVivante.
+# In particolare, PyTorch/Demucs usa TORCH_HOME per i checkpoint dei modelli.
+APP_ROOT = (
+    Path(sys.executable).parent.resolve()
+    if getattr(sys, "frozen", False)
+    else Path(__file__).parent.resolve()
+)
+APP_MODELS_DIR = APP_ROOT / "models"
+APP_CACHE_DIR = APP_ROOT / ".cache"
+APP_MODELS_DIR.mkdir(parents=True, exist_ok=True)
+APP_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+os.environ["TORCH_HOME"] = str(APP_MODELS_DIR)
+os.environ["HF_HOME"] = str(APP_MODELS_DIR / "huggingface")
+os.environ["HUGGINGFACE_HUB_CACHE"] = str(APP_MODELS_DIR / "huggingface" / "hub")
+os.environ["TRANSFORMERS_CACHE"] = str(APP_MODELS_DIR / "huggingface" / "transformers")
+os.environ["XDG_CACHE_HOME"] = str(APP_CACHE_DIR)
+
 import yaml
 from tkinter import filedialog, messagebox
 
@@ -47,8 +65,7 @@ SEGMENT_RETRY_ORDER = [None, 5.0, 3.0, 2.0, 1.5]
 
 def resource_path(relative_path):
     """Restituisce un percorso valido sia da sorgente sia da EXE."""
-    base_path = Path(sys.executable).parent if getattr(sys, "frozen", False) else Path(__file__).parent.resolve()
-    return str((base_path / relative_path).resolve())
+    return str((APP_ROOT / relative_path).resolve())
 
 
 def is_cuda_oom(error):
@@ -379,6 +396,8 @@ class DemucsApp(ctk.CTk):
         stdout_stream = QueueLogStream(self.ui_queue, "INFO")
         stderr_stream = QueueLogStream(self.ui_queue, "WARNING")
         self.ui_queue.put(("log", "INFO", f"Verifica e installazione modello: {model_name}"))
+        self.ui_queue.put(("log", "INFO", f"Cache modelli locale: {APP_MODELS_DIR}"))
+        self.ui_queue.put(("log", "INFO", f"Checkpoint Demucs: {Path(torch.hub.get_dir()) / "checkpoints"}"))
         try:
             with contextlib.redirect_stdout(stdout_stream), contextlib.redirect_stderr(stderr_stream):
                 separator = demucs.api.Separator(
