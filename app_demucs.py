@@ -6,8 +6,7 @@ import flet as ft
 async def main(page: ft.Page):
     # Imposta subito i limiti della finestra, già durante lo splash.
     page.title = "ChansonVivante"
-    page.theme_mode = ft.ThemeMode.LIGHT
-    page.bgcolor = "#ffffff"
+    page.theme_mode = ft.ThemeMode.SYSTEM
     page.padding = 0
     page.window_width = 900
     page.window_height = 780
@@ -21,7 +20,7 @@ async def main(page: ft.Page):
         ft.Column(
             [
                 ft.Text("ChansonVivante", size=24, weight=ft.FontWeight.W_600),
-                ft.Text("Caricamento del motore audio...", size=13, color="#555555"),
+                ft.Text("Caricamento del motore audio...", size=13),
                 ft.ProgressRing(width=22, height=22, stroke_width=2),
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
