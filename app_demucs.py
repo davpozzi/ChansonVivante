@@ -476,7 +476,10 @@ class DemucsApp(ctk.CTk):
                 except UnboundLocalError:
                     pass
                 gc.collect()
-                torch.cuda.empty_cache()
+                try:
+                    torch.cuda.empty_cache()
+                except Exception:
+                    pass
 
         raise RuntimeError(last_oom_message or "CUDA out of memory: memoria GPU insufficiente.")
 
@@ -505,7 +508,10 @@ class DemucsApp(ctk.CTk):
                     if not is_cuda_oom(error):
                         raise
                     gc.collect()
-                    torch.cuda.empty_cache()
+                    try:
+                        torch.cuda.empty_cache()
+                    except Exception:
+                        pass
                     self.ui_queue.put((
                         "status",
                         "La GPU non ha memoria sufficiente anche con segmenti ridotti: riprovo su CPU. Potrebbe richiedere molto più tempo.",
