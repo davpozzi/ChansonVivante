@@ -58,25 +58,12 @@ os.environ["TORCHAUDIO_USE_TORCHCODEC"] = "0"
 os.environ["PYTHONIOENCODING"] = "utf-8"
 
 import customtkinter as ctk
-import soundfile as sf
-import torch
 
-try:
-    import demucs.api
-except ImportError:
-    raise SystemExit(
-        "Errore: la libreria 'demucs' non è installata o non è configurata correttamente."
-    )
-
-try:
-    import imageio_ffmpeg
-
-    ffmpeg_exe_path = Path(imageio_ffmpeg.get_ffmpeg_exe())
-    ffmpeg_folder = str(ffmpeg_exe_path.parent.resolve())
-    os.environ["PATH"] = ffmpeg_folder + os.pathsep + os.environ.get("PATH", "")
-except ImportError:
-    raise SystemExit("Errore: il modulo 'imageio-ffmpeg' non è installato.")
-
+# Le librerie pesanti vengono caricate dopo la comparsa della finestra principale.
+# In questo modo l'avvio percepito non resta bloccato sull'import di PyTorch/Demucs.
+torch = None
+demucs = None
+sf = None
 
 _splash_status.configure(text="Avvio interfaccia...")
 _splash.update()
@@ -190,14 +177,51 @@ class DemucsApp(ctk.CTk):
         self.log_textbox = None
         self.log_history = []
         self.interactive_widgets = []
-        try:
-            self.has_cuda = bool(torch.cuda.is_available())
-        except Exception:
-            self.has_cuda = False
+        self.has_cuda = False
+        self.ai_ready = False
         self.create_widgets()
-        self.refresh_gpu_info()
+        self.status_label.configure(
+            text="Interfaccia pronta · caricamento motore AI...",
+            text_color="orange",
+        )
+        self.btn_start.configure(state="disabled")
         self.after(100, self.process_ui_queue)
-        self.after(500, self.check_model_on_startup)
+        self.after(150, self.start_ai_dependency_loading)
+
+    def start_ai_dependency_loading(self):
+        """Carica PyTorch/Demucs in background dopo aver mostrato la GUI."""
+        self.status_label.configure(
+            text="Caricamento motore AI in background...",
+            text_color="orange",
+        )
+        self.btn_start.configure(state="disabled")
+        threading.Thread(
+            target=self.load_ai_dependencies_worker,
+            daemon=True,
+        ).start()
+
+    def load_ai_dependencies_worker(self):
+        """Importa le librerie pesanti senza bloccare il thread della GUI."""
+        global torch, demucs, sf
+        try:
+            import soundfile as soundfile_module
+            import torch as torch_module
+            import demucs as demucs_module
+            import demucs.api  # noqa: F401
+            import imageio_ffmpeg
+
+            ffmpeg_exe_path = Path(imageio_ffmpeg.get_ffmpeg_exe())
+            ffmpeg_folder = str(ffmpeg_exe_path.parent.resolve())
+            os.environ["PATH"] = ffmpeg_folder + os.pathsep + os.environ.get("PATH", "")
+
+            sf = soundfile_module
+            torch = torch_module
+            demucs = demucs_module
+            self.ui_queue.put(("ai_ready",))
+        except ImportError as error:
+            self.ui_queue.put(("ai_error", f"Impossibile caricare il motore AI: {error}"))
+        except Exception as error:
+            self.ui_queue.put(("ai_error", f"Errore durante il caricamento del motore AI: {error}"))
 
     def create_widgets(self):
         ctk.CTkLabel(
@@ -586,6 +610,28 @@ class DemucsApp(ctk.CTk):
                             os.startfile(folder)
                         except OSError:
                             pass
+                elif kind == "ai_ready":
+                    self.ai_ready = True
+                    try:
+                        self.has_cuda = bool(torch.cuda.is_available())
+                    except Exception:
+                        self.has_cuda = False
+                    self.status_label.configure(
+                        text="Motore AI pronto. Pronto per l'elaborazione.",
+                        text_color="green",
+                    )
+                    self.btn_start.configure(state="normal")
+                    self.refresh_gpu_info()
+                    self.after(100, self.check_model_on_startup)
+                    self.append_log("SUCCESS", "Motore AI caricato.")
+                elif kind == "ai_error":
+                    _, message = item
+                    self.status_label.configure(
+                        text="Motore AI non disponibile.",
+                        text_color="red",
+                    )
+                    self.append_log("ERROR", message)
+                    messagebox.showerror("Errore avvio AI", message)
                 elif kind == "model_install_finished":
                     self.model_installing = False
                 elif kind == "finished":
@@ -595,6 +641,13 @@ class DemucsApp(ctk.CTk):
         self.after(100, self.process_ui_queue)
 
     def start_thread(self):
+        if not self.ai_ready:
+            messagebox.showinfo(
+                "Motore AI",
+                "Il motore AI è ancora in caricamento. Riprova tra qualche secondo.",
+            )
+            return
+
         input_name = self.input_file.get()
         if not input_name:
             messagebox.showerror("Errore", "Seleziona prima una traccia audio.")
@@ -845,6 +898,8 @@ class DemucsApp(ctk.CTk):
 if __name__ == "__main__":
     try:
         app = DemucsApp()
+        # La GUI è già visibile: chiudiamo subito lo splash e lasciamo
+        # il caricamento di PyTorch/Demucs al thread dedicato.
         try:
             _splash.destroy()
         except Exception:
