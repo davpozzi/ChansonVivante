@@ -1,4 +1,4 @@
-﻿import contextlib
+import contextlib
 import gc
 import inspect
 import os
@@ -6,6 +6,9 @@ import queue
 import sys
 import threading
 from pathlib import Path
+from urllib.parse import urlparse
+
+import yaml
 from tkinter import filedialog, messagebox
 
 # Disattiviamo esplicitamente torchcodec prima di caricare qualsiasi altra cosa.
@@ -151,6 +154,7 @@ class DemucsApp(ctk.CTk):
         self.create_widgets()
         self.refresh_gpu_info()
         self.after(100, self.process_ui_queue)
+        self.after(500, self.check_model_on_startup)
 
     def create_widgets(self):
         ctk.CTkLabel(
@@ -312,6 +316,93 @@ class DemucsApp(ctk.CTk):
             justify="center",
         ).pack(padx=25, pady=(0, 10))
 
+    def model_checkpoint_paths(self, model_name):
+        """Restituisce i checkpoint necessari al modello dalla cache di PyTorch."""
+        remote_root = Path(demucs.pretrained.REMOTE_ROOT)
+        bag_file = remote_root / f"{model_name}.yaml"
+        files_list = remote_root / "files.txt"
+        if not bag_file.is_file() or not files_list.is_file():
+            raise RuntimeError(
+                f"Impossibile leggere i metadati Demucs per il modello '{model_name}'."
+            )
+
+        with bag_file.open("r", encoding="utf-8") as file:
+            model_bag = yaml.safe_load(file) or {}
+        remote_models = demucs.pretrained._parse_remote_files(files_list)
+        checkpoint_dir = Path(torch.hub.get_dir()) / "checkpoints"
+        paths = []
+        for signature in model_bag.get("models", []):
+            url = remote_models.get(signature)
+            if not url:
+                raise RuntimeError(
+                    f"Checkpoint '{signature}' non trovato nei metadati Demucs."
+                )
+            filename = Path(urlparse(url).path).name
+            paths.append(checkpoint_dir / filename)
+        return paths
+
+    def is_model_installed(self, model_name):
+        """Un modello è installato solo se sono presenti tutti i suoi checkpoint."""
+        paths = self.model_checkpoint_paths(model_name)
+        return bool(paths) and all(path.is_file() and path.stat().st_size > 0 for path in paths)
+
+    def check_model_on_startup(self):
+        model_name = self.model_var.get()
+        try:
+            installed = self.is_model_installed(model_name)
+        except Exception as error:
+            self.append_log("WARNING", f"Controllo modello non riuscito: {error}")
+            return
+
+        if not installed:
+            install = messagebox.askyesno(
+                "Modello non installato",
+                f"Il modello '{model_name}' non è installato. Vuoi installarlo ora?\\n\\n"
+                "Il download verrà mostrato nella finestra dei log."
+            )
+            if install:
+                self.start_model_installation(model_name)
+
+    def start_model_installation(self, model_name):
+        if getattr(self, "model_installing", False):
+            return
+        self.model_installing = True
+        self.set_running_state(True)
+        self.ui_queue.put(("status", f"Download del modello {model_name}...", "orange"))
+        self.open_log_window()
+        threading.Thread(
+            target=self.install_model_worker, args=(model_name,), daemon=True
+        ).start()
+
+    def install_model_worker(self, model_name):
+        """Scarica e carica il modello in background; Demucs/PyTorch scrivono i log."""
+        stdout_stream = QueueLogStream(self.ui_queue, "INFO")
+        stderr_stream = QueueLogStream(self.ui_queue, "WARNING")
+        self.ui_queue.put(("log", "INFO", f"Verifica e installazione modello: {model_name}"))
+        try:
+            with contextlib.redirect_stdout(stdout_stream), contextlib.redirect_stderr(stderr_stream):
+                separator = demucs.api.Separator(
+                    model=model_name, device="cpu", shifts=0, overlap=0.25
+                )
+                del separator
+                gc.collect()
+            if not self.is_model_installed(model_name):
+                raise RuntimeError(
+                    f"Il download di '{model_name}' è terminato, ma i checkpoint non risultano presenti."
+                )
+            self.ui_queue.put((
+                "done",
+                f"Modello '{model_name}' installato e pronto.",
+                None,
+            ))
+        except Exception as error:
+            self.ui_queue.put(("error", f"Installazione di '{model_name}' non riuscita: {error}"))
+        finally:
+            stdout_stream.flush()
+            stderr_stream.flush()
+            self.ui_queue.put(("model_install_finished",))
+            self.ui_queue.put(("finished",))
+
     def open_log_window(self):
         """Apre (o riporta in primo piano) la finestra dei log."""
         if self.log_window is not None and self.log_window.winfo_exists():
@@ -450,6 +541,8 @@ class DemucsApp(ctk.CTk):
                             os.startfile(folder)
                         except OSError:
                             pass
+                elif kind == "model_install_finished":
+                    self.model_installing = False
                 elif kind == "finished":
                     self.set_running_state(False)
         except queue.Empty:
@@ -463,6 +556,22 @@ class DemucsApp(ctk.CTk):
             return
         if not Path(input_name).is_file():
             messagebox.showerror("Errore", "Il file audio selezionato non esiste.")
+            return
+
+        selected_model = self.model_var.get()
+        try:
+            installed = self.is_model_installed(selected_model)
+        except Exception as error:
+            messagebox.showerror("Errore modello", str(error))
+            return
+        if not installed:
+            install = messagebox.askyesno(
+                "Modello non installato",
+                f"Il modello '{selected_model}' non è installato. Vuoi installarlo ora?\\n\\n"
+                "La separazione partirà dopo il download."
+            )
+            if install:
+                self.start_model_installation(selected_model)
             return
 
         settings = {
