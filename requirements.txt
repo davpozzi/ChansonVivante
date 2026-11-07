@@ -1,8 +1,7 @@
 # Core application and audio-separation dependencies
-flet==0.28.3
-# Flet 0.28.3 keeps the native desktop client in a separate package.
-# The Windows portable build needs it explicitly.
-flet-desktop==0.28.3; sys_platform == "win32"
+# Flet 1.x includes the current CLI and desktop client through the all extra.
+# This version includes the Windows taskbar identity and client-cache fixes.
+flet[all]==1.1.2
 soundfile
 demucs
 imageio-ffmpeg
