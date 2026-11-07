@@ -178,6 +178,30 @@ class FletMigrationTests(unittest.TestCase):
         self.assertFalse(self.app.start_button.disabled)
         self.assertFalse(self.app.progress.visible)
 
+    def test_queue_poller_applies_worker_events_on_the_ui_loop(self):
+        self.app.model_installing = True
+        self.app.ui_queue.put(("log", "INFO", "worker log"))
+        self.app.ui_queue.put(("status", "Elaborazione...", "#fbbf24"))
+        self.app.ui_queue.put(("error", "errore simulato"))
+        self.app.ui_queue.put(("model_install_finished",))
+        self.app.ui_queue.put(("finished",))
+
+        async def one_poll_cycle():
+            task = asyncio.create_task(self.app._poll_queue())
+            await asyncio.sleep(0.01)
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
+
+        asyncio.run(one_poll_cycle())
+
+        self.assertEqual(self.app.status_text.value, "Errore: errore simulato")
+        self.assertFalse(self.app.model_installing)
+        self.assertTrue(any("worker log" in message for _, message in self.app.log_history))
+        self.assertEqual(len(self.page.dialogs), 1)
+
     def test_device_options_are_updated_without_legacy_dropdown_api(self):
         self.app._device_changed(
             SimpleNamespace(control=SimpleNamespace(value="Solo CPU"))
