@@ -256,7 +256,7 @@ class FletMigrationTests(unittest.TestCase):
         self.assertIsNone(cpu_budget)
         self.assertIn("CPU", cpu_message)
         self.assertEqual(manual_budget, 5.5)
-        self.assertIn("manuale", manual_message.lower())
+        self.assertIn("Budget richiesto", manual_message)
         self.assertAlmostEqual(automatic_budget, 6.56, places=2)
         self.assertIn("automatica", automatic_message.lower())
 
