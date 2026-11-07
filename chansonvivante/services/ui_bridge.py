@@ -66,16 +66,24 @@ class UIQueueMixin:
             self.page.update()
             await asyncio.sleep(0.1)
 
-    def _input_picked(self, e):
-        if e.files:
-            self.input_file.set(e.files[0].path)
-            self.input_field.value = e.files[0].path
-            self.page.update()
+    async def browse_input(self):
+        files = await self.input_picker.pick_files(
+            allow_multiple=False,
+            file_type=ft.FilePickerFileType.CUSTOM,
+            allowed_extensions=["mp3", "wav", "flac", "m4a"],
+        )
+        if files:
+            selected_path = files[0].path
+            if selected_path:
+                self.input_file.set(selected_path)
+                self.input_field.value = selected_path
+                self.page.update()
 
-    def _output_picked(self, e):
-        if e.path:
-            self.output_dir.set(e.path)
-            self.output_field.value = e.path
+    async def browse_output(self):
+        selected_path = await self.output_picker.get_directory_path()
+        if selected_path:
+            self.output_dir.set(selected_path)
+            self.output_field.value = selected_path
             self.page.update()
 
     def _message(self, title, message):
@@ -211,7 +219,7 @@ class UIQueueMixin:
 
     def set_running_state(self, running):
         self.start_button.disabled = running or not self.ai_ready
-        self.start_button.text = "Elaborazione in corso..." if running else "Avvia separazione"
+        self.start_button.content = "Elaborazione in corso..." if running else "Avvia separazione"
         for control in [self.input_field, self.output_field, self.format_control,
                         self.bit_control, self.model_control, self.shifts_control,
                         self.stems_control, self.device_control, self.budget_slider,
