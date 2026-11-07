@@ -47,6 +47,8 @@ jobs:
         run: >-
           flet pack ChansonVivante.py --yes --onedir
           --name ChansonVivante --icon logo.ico
+          --product-name ChansonVivante --file-description ChansonVivante
+          --company-name ChansonVivante
           --add-data "logo.ico;." --hidden-import demucs.api
           --pyinstaller-build-args=--clean
           --pyinstaller-build-args=--debug=noarchive
