@@ -344,6 +344,14 @@ class FletMigrationTests(unittest.TestCase):
             ["Automatica", "Solo CPU"],
         )
 
+    def test_archived_entrypoints_delegate_to_current_flet_main(self):
+        from archive.legacy_entrypoints import app_demucs, app_flet, app_flet_clean
+
+        self.assertIs(app_demucs.main, ChansonVivante.main)
+        self.assertIs(app_flet_clean.main, ChansonVivante.main)
+        self.assertIs(app_flet.DemucsApp, DemucsApp)
+        self.assertIs(app_flet_clean.DemucsApp, DemucsApp)
+
     def test_startup_splash_then_constructs_application(self):
         page = FakePage()
         asyncio.run(ChansonVivante.main(page))
