@@ -43,11 +43,11 @@ async def main(page: ft.Page):
     page.title = "ChansonVivante"
     page.theme_mode = ft.ThemeMode.SYSTEM
     page.padding = 0
-    page.window_width = 900
-    page.window_height = 780
-    page.window_min_width = 840
-    page.window_min_height = 680
-    page.window_resizable = True
+    page.window.width = 900
+    page.window.height = 780
+    page.window.min_width = 840
+    page.window.min_height = 680
+    page.window.resizable = True
     page.window.icon = str(APP_ROOT / "logo.ico")
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
