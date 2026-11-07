@@ -100,6 +100,41 @@ jobs:
           Write-Host "Bundled application icon: $bundledIcon"
           Write-Host "Windows package smoke test passed ($($file.Length) bytes)."
 
+      - name: Smoke-test packaged application startup
+        shell: pwsh
+        run: |
+          $exe = (Resolve-Path "dist\ChansonVivante\ChansonVivante.exe").Path
+          $startupLog = Join-Path $env:LOCALAPPDATA "ChansonVivante\logs\startup.log"
+          if (Test-Path $startupLog) { Remove-Item $startupLog -Force }
+
+          $process = Start-Process -FilePath $exe -WorkingDirectory (Split-Path $exe) -PassThru
+          try {
+            $deadline = (Get-Date).AddSeconds(25)
+            do {
+              Start-Sleep -Seconds 1
+              $process.Refresh()
+              if ($process.HasExited) {
+                throw "Packaged application exited during startup with code $($process.ExitCode)."
+              }
+            } while ((Get-Date) -lt $deadline)
+
+            if (-not (Test-Path $startupLog)) {
+              throw "Application process stayed alive but did not write its startup diagnostic."
+            }
+            $diagnostic = Get-Content $startupLog -Raw
+            if ($diagnostic -notmatch "frozen=True") {
+              throw "Startup diagnostic does not confirm a frozen executable: $diagnostic"
+            }
+            Write-Host "Packaged application remained running for 25 seconds."
+            Write-Host "Startup diagnostic: $diagnostic"
+          }
+          finally {
+            $process.Refresh()
+            if (-not $process.HasExited) {
+              Stop-Process -Id $process.Id -Force
+            }
+          }
+
       - name: Upload packaged application for inspection
         uses: actions/upload-artifact@v4
         with:
