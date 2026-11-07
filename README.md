@@ -30,7 +30,7 @@ Informazioni sul progetto: [www.davidepozzi.it/chansonsvivante](https://www.davi
 ### Requisiti
 
 - Windows per la distribuzione EXE descritta qui sotto.
-- Per eseguire il sorgente: Python e le dipendenze compatibili con il progetto, tra cui Flet 0.28.3, PyTorch, SoundFile, Demucs e imageio-ffmpeg.
+- Per eseguire il sorgente: Python e le dipendenze compatibili con il progetto, tra cui Flet 1.1.2, PyTorch, SoundFile, Demucs e imageio-ffmpeg.
 - FFmpeg è utilizzato da Demucs/imageio-ffmpeg per le operazioni audio che ne richiedono l'eseguibile.
 - Per l'accelerazione NVIDIA è necessaria una build di PyTorch compatibile con CUDA, oltre a GPU e driver compatibili. La sola presenza di una GPU NVIDIA non garantisce che CUDA sia disponibile.
 - Senza CUDA, o selezionando **Solo CPU**, l'elaborazione viene eseguita dal processore.
@@ -84,7 +84,7 @@ Il codice applicativo è organizzato nel package `chansonvivante/`: `ui/` contie
 ### Requirements
 
 - Windows for the packaged EXE distribution described below.
-- To run from source: Python and compatible project dependencies, including Flet 0.28.3, PyTorch, SoundFile, Demucs and imageio-ffmpeg.
+- To run from source: Python and compatible project dependencies, including Flet 1.1.2, PyTorch, SoundFile, Demucs and imageio-ffmpeg.
 - FFmpeg is used by Demucs/imageio-ffmpeg for audio operations that require its executable.
 - NVIDIA acceleration requires a PyTorch build compatible with CUDA, as well as a compatible GPU and driver. Having an NVIDIA GPU alone does not guarantee CUDA availability.
 - Without CUDA, or when **CPU-only** is selected, processing runs on the CPU.
