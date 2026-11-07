@@ -69,24 +69,24 @@ class DemucsApp(DemucsBackend):
         self.format_control = ft.Dropdown(
             label="Formato", value="flac", expand=True,
             options=[ft.dropdown.Option(x) for x in ("flac", "wav", "mp3")],
-            on_change=lambda e: self.format_var.set(e.control.value),
+            on_select=lambda e: self.format_var.set(e.control.value),
         )
         self.bit_control = ft.Dropdown(
             label="Qualità", value="16-bit", expand=True,
             options=[ft.dropdown.Option(x) for x in ("16-bit", "24-bit")],
-            on_change=lambda e: self.bit_var.set(e.control.value),
+            on_select=lambda e: self.bit_var.set(e.control.value),
         )
         self.model_control = ft.Dropdown(
             label="Modalità", value="Veloce", expand=True,
             options=[ft.dropdown.Option("Veloce"), ft.dropdown.Option("Approfondita")],
-            on_change=self._model_mode_changed,
+            on_select=self._model_mode_changed,
         )
         self.shifts_control = ft.Dropdown(
             label="Precisione", value="1 (Standard)", expand=True,
             options=[ft.dropdown.Option(x) for x in (
                 "0 (Veloce)", "1 (Standard)", "2 (Preciso)", "3 (Lento)"
             )],
-            on_change=lambda e: self.shifts_var.set(e.control.value),
+            on_select=lambda e: self.shifts_var.set(e.control.value),
         )
         self.stems_control = ft.Dropdown(
             label="Tracce da generare", value=self.stems_var.get(), expand=True,
@@ -94,17 +94,17 @@ class DemucsApp(DemucsBackend):
                 ft.dropdown.Option("Solo Voce e Base (2 tracce)"),
                 ft.dropdown.Option("Tutti gli strumenti (4 tracce)"),
             ],
-            on_change=lambda e: self.stems_var.set(e.control.value),
+            on_select=lambda e: self.stems_var.set(e.control.value),
         )
         self.device_control = ft.Dropdown(
             label="Modalità di elaborazione", value="Automatica", width=250,
             options=[ft.dropdown.Option(x) for x in ("Automatica", "Manuale", "Solo CPU")],
-            on_change=self._device_changed,
+            on_select=self._device_changed,
         )
         self.budget_text = ft.Text("Memoria GPU: 3,0 GB")
         self.budget_slider = ft.Slider(
             min=1, max=12, divisions=22, value=3,
-            on_change=self._budget_changed, expand=True,
+            on_select=self._budget_changed, expand=True,
         )
         self.gpu_info = ft.Text("Rilevamento GPU in corso...", size=12)
         self.status_text = ft.Text(
