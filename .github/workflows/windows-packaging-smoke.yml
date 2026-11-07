@@ -4,9 +4,21 @@ on:
   push:
     branches:
       - "migration/**"
+    paths:
+      - "ChansonVivante.py"
+      - "chansonvivante/**"
+      - "requirements.txt"
+      - "logo.ico"
+      - ".github/workflows/windows-packaging-smoke.yml"
   pull_request:
     branches:
       - main
+    paths:
+      - "ChansonVivante.py"
+      - "chansonvivante/**"
+      - "requirements.txt"
+      - "logo.ico"
+      - ".github/workflows/windows-packaging-smoke.yml"
   workflow_dispatch:
 
 permissions:
