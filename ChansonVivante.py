@@ -14,6 +14,8 @@ APP_ROOT = (
     if getattr(sys, "frozen", False)
     else Path(__file__).parent.resolve()
 )
+# PyInstaller 6 stores bundled data under _internal by default in onedir builds.
+RESOURCE_ROOT = Path(getattr(sys, "_MEIPASS", APP_ROOT))
 
 
 def write_startup_diagnostic():
@@ -48,7 +50,7 @@ async def main(page: ft.Page):
     page.window.min_width = 840
     page.window.min_height = 680
     page.window.resizable = True
-    page.window.icon = str(APP_ROOT / "logo.ico")
+    page.window.icon = str(RESOURCE_ROOT / "logo.ico")
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
