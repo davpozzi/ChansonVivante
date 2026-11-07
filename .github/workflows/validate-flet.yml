@@ -19,13 +19,13 @@ jobs:
       - name: Install UI dependencies
         run: python -m pip install flet==0.28.3 PyYAML
       - name: Compile application
-        run: python -m compileall -q app_demucs.py chansonvivante
+        run: python -m compileall -q ChansonVivante.py chansonvivante
       - name: Import application and construct Flet controls
         run: |
           python - <<'PY'
           from types import SimpleNamespace
 
-          import app_demucs
+          import ChansonVivante
           from chansonvivante.ui.main_window import DemucsApp
 
           class FakePage(SimpleNamespace):
@@ -39,7 +39,7 @@ jobs:
                   # Non avvia i task asincroni né il caricamento del motore AI.
                   pass
 
-          assert callable(app_demucs.main)
+          assert callable(ChansonVivante.main)
 
           page = FakePage(overlay=[])
           app = DemucsApp(page)
