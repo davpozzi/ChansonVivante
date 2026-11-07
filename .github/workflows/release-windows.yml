@@ -46,18 +46,27 @@ jobs:
       - name: Build standalone Windows application
         run: >-
           pyinstaller --noconfirm --clean --windowed --onedir
-          --name app_demucs --icon logo.ico --add-data "logo.ico;."
+          --name ChansonVivante --icon logo.ico --add-data "logo.ico;."
           --collect-all flet --collect-all flet_desktop
           --collect-all torch --collect-all torchaudio --collect-all demucs
           --collect-all soundfile --collect-all imageio_ffmpeg
           --collect-all huggingface_hub --collect-all safetensors
-          --collect-all omegaconf --hidden-import demucs.api app_demucs.py
+          --collect-all omegaconf --hidden-import demucs.api ChansonVivante.py
+
+      - name: Verify portable executable
+        shell: pwsh
+        run: |
+          $exe = "dist\ChansonVivante\ChansonVivante.exe"
+          if (-not (Test-Path $exe)) { throw "Portable executable was not created: $exe" }
+          $size = (Get-Item $exe).Length
+          if ($size -lt 100KB) { throw "Portable executable looks invalid or truncated: $size bytes" }
+          Write-Host "Portable executable created: $size bytes"
 
       - name: Assemble portable ZIP
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path release/portable | Out-Null
-          Copy-Item -Recurse dist/app_demucs release/portable/ChansonVivante
+          Copy-Item -Recurse dist/ChansonVivante release/portable/ChansonVivante
           Compress-Archive -Path release/portable/ChansonVivante -DestinationPath "release/ChansonVivante-${{ steps.version.outputs.version }}-windows-x64-portable.zip" -CompressionLevel Optimal
 
       - name: Build Windows installer
