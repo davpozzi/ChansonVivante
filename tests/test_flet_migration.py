@@ -5,6 +5,7 @@ missed by the migration smoke test. They intentionally avoid launching a desktop
 window or loading the heavy Demucs/PyTorch runtime.
 """
 import asyncio
+import inspect
 import unittest
 from types import SimpleNamespace
 
@@ -64,6 +65,9 @@ class FletMigrationTests(unittest.TestCase):
 
     def test_entrypoint_and_window_configuration(self):
         self.assertTrue(callable(ft.run))
+        self.assertTrue(hasattr(ft.Page, "window"))
+        self.assertTrue(callable(getattr(ft.Page, "show_dialog", None)))
+        self.assertTrue(callable(getattr(ft.Page, "pop_dialog", None))
         self.assertEqual(self.page.window.width, 900)
         self.assertEqual(self.page.window.height, 780)
         self.assertEqual(self.page.window.min_width, 840)
@@ -120,6 +124,8 @@ class FletMigrationTests(unittest.TestCase):
         self.assertEqual(self.app.budget_text.value, "Budget VRAM: 4.0 GB")
 
     def test_file_picker_buttons_await_results(self):
+        self.assertTrue(inspect.iscoroutinefunction(ft.FilePicker.pick_files))
+        self.assertTrue(inspect.iscoroutinefunction(ft.FilePicker.get_directory_path))
         self.assertTrue(asyncio.iscoroutinefunction(self.app.browse_input))
         self.assertTrue(asyncio.iscoroutinefunction(self.app.browse_output))
 
