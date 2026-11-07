@@ -27,6 +27,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
+          python -m pip install pyinstaller
 
       - name: Build standalone Windows application
         run: >-
@@ -52,7 +53,7 @@ jobs:
       - name: Verify executable and Windows version metadata
         shell: pwsh
         run: |
-          $exe = "dist\\ChansonVivante\\ChansonVivante.exe"
+          $exe = "dist\ChansonVivante\ChansonVivante.exe"
           if (-not (Test-Path $exe)) { throw "Portable executable was not created: $exe" }
 
           $file = Get-Item $exe
@@ -73,7 +74,7 @@ jobs:
             Write-Host "$property = $actual"
           }
 
-          if (-not (Test-Path "dist\\ChansonVivante\\logo.ico")) {
+          if (-not (Test-Path "dist\ChansonVivante\logo.ico")) {
             throw "Application icon was not included in the packaged directory."
           }
           Write-Host "Windows package smoke test passed ($($file.Length) bytes)."
