@@ -220,7 +220,8 @@ class FletMigrationTests(unittest.TestCase):
 
         thread.assert_called_once()
         kwargs = thread.call_args.kwargs
-        self.assertIs(kwargs["target"], self.app.run_demucs_api)
+        self.assertIs(kwargs["target"].__self__, self.app)
+        self.assertIs(kwargs["target"].__func__, self.app.run_demucs_api.__func__)
         self.assertTrue(kwargs["daemon"])
         settings = kwargs["args"][0]
         self.assertEqual(settings, {
