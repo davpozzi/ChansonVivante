@@ -6,7 +6,9 @@ window or loading the heavy Demucs/PyTorch runtime.
 """
 import asyncio
 import inspect
+import tempfile
 import unittest
+from unittest.mock import patch
 from types import SimpleNamespace
 
 import flet as ft
@@ -182,6 +184,99 @@ class FletMigrationTests(unittest.TestCase):
         self.assertEqual(self.app.start_button.content, "Avvia separazione")
         self.assertFalse(self.app.start_button.disabled)
         self.assertFalse(self.app.progress.visible)
+
+    def test_file_picker_cancel_does_not_erase_current_selection(self):
+        self.app.input_file.set("C:/audio/precedente.wav")
+        self.app.input_field.value = "C:/audio/precedente.wav"
+        self.app.output_dir.set("C:/audio/output")
+        self.app.output_field.value = "C:/audio/output"
+        self.app.input_picker = FakeFilePicker(files=[])
+        self.app.output_picker = FakeFilePicker(directory=None)
+
+        asyncio.run(self.app.browse_input())
+        asyncio.run(self.app.browse_output())
+
+        self.assertEqual(self.app.input_file.get(), "C:/audio/precedente.wav")
+        self.assertEqual(self.app.input_field.value, "C:/audio/precedente.wav")
+        self.assertEqual(self.app.output_dir.get(), "C:/audio/output")
+        self.assertEqual(self.app.output_field.value, "C:/audio/output")
+
+    def test_start_thread_passes_every_selected_setting_to_demucs(self):
+        self.app.ai_ready = True
+        self.app.is_model_installed = lambda _model: True
+        self.app.output_dir.set("C:/audio/output")
+        self.app.format_var.set("wav")
+        self.app.bit_var.set("24-bit")
+        self.app.model_var.set("htdemucs_ft")
+        self.app.shifts_var.set("2 (Preciso)")
+        self.app.stems_var.set("Tutti gli strumenti (4 tracce)")
+        self.app.device_mode_var.set("Manuale")
+        self.app.budget_gb = 5.5
+
+        with tempfile.NamedTemporaryFile(suffix=".wav") as source:
+            self.app.input_file.set(source.name)
+            with patch("chansonvivante.services.ui_bridge.threading.Thread") as thread:
+                self.app.start_thread()
+
+        thread.assert_called_once()
+        kwargs = thread.call_args.kwargs
+        self.assertIs(kwargs["target"], self.app.run_demucs_api)
+        self.assertTrue(kwargs["daemon"])
+        settings = kwargs["args"][0]
+        self.assertEqual(settings, {
+            "input_path": source.name,
+            "output_dir": "C:/audio/output",
+            "format": "wav",
+            "model": "htdemucs_ft",
+            "is_24bit": True,
+            "shifts": 2,
+            "two_stems": False,
+            "device_mode": "Manuale",
+            "budget_gb": 5.5,
+        })
+        thread.return_value.start.assert_called_once()
+        self.assertTrue(self.app.start_button.disabled)
+
+    def test_gpu_mode_controls_manual_budget_availability(self):
+        self.app.has_cuda = True
+        self.app.device_mode_var.set("Manuale")
+        self.app.on_device_mode_change()
+        self.assertFalse(self.app.budget_slider.disabled)
+        self.assertEqual(
+            [option.key for option in self.app.device_control.options],
+            ["Automatica", "Manuale", "Solo CPU"],
+        )
+
+        self.app.has_cuda = False
+        self.app.on_device_mode_change()
+        self.assertTrue(self.app.budget_slider.disabled)
+        self.assertEqual(self.app.device_mode_var.get(), "Automatica")
+        self.assertEqual(self.app.device_control.value, "Automatica")
+        self.assertEqual(
+            [option.key for option in self.app.device_control.options],
+            ["Automatica", "Solo CPU"],
+        )
+
+    def test_log_dialog_can_be_reopened_and_cleared(self):
+        self.app.append_log("INFO", "prima riga")
+        self.app.open_log_window()
+        self.page.dialogs[-1].actions[-1].on_click(None)
+        self.assertEqual(len(self.page.dialogs), 0)
+
+        self.app.open_log_window()
+        self.assertEqual(len(self.page.dialogs), 1)
+        self.assertIn("prima riga", self.app.log_content.value)
+        self.page.dialogs[-1].actions[0].on_click(None)
+        self.assertEqual(self.app.log_history, [])
+        self.assertEqual(self.app.log_content.value, "")
+
+    def test_missing_model_prompts_before_installation(self):
+        self.app.is_model_installed = lambda _model: False
+        self.app.check_model_on_startup()
+        self.assertEqual(len(self.page.dialogs), 1)
+        self.assertIn("htdemucs", self.page.dialogs[0].content.value)
+        self.page.dialogs[0].actions[0].on_click(None)
+        self.assertEqual(len(self.page.dialogs), 0)
 
     def test_queue_poller_applies_worker_events_on_the_ui_loop(self):
         self.app.model_installing = True
