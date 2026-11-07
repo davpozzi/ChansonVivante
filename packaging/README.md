@@ -4,6 +4,8 @@ Le release si generano dal branch `main` creando e pubblicando un tag Git nel fo
 
 Il workflow `.github/workflows/release-windows.yml` costruisce una distribuzione PyInstaller **onedir**, crea uno ZIP portabile e un installer Inno Setup, quindi pubblica entrambi nella GitHub Release.
 
+Il client desktop Flet viene installato esplicitamente per Windows nella stessa versione di Flet e incluso nel pacchetto. Questo evita un avvio incompleto dell'EXE quando `flet_desktop` non viene rilevato dalla build.
+
 ## Creare una release
 Apri **Releases → Draft a new release**, crea un tag `v1.0.0` scegliendo come target `main`, quindi pubblica. Il workflow si attiva sul tag e carica i due pacchetti.
 
@@ -11,7 +13,7 @@ In alternativa, **Actions → Build Windows release → Run workflow** permette 
 
 ## Pacchetti
 - **Setup**: installa in `%LOCALAPPDATA%\Programs\ChansonVivante`, senza privilegi amministrativi. Crea il collegamento nel menu Start; quello sul Desktop è opzionale.
-- **Portable ZIP**: estrarre la cartella `ChansonVivante` e avviare `app_demucs.exe`. Non spostare l'EXE fuori dalla cartella.
+- **Portable ZIP**: estrarre la cartella `ChansonVivante` e avviare `ChansonVivante.exe`. Non spostare l'EXE fuori dalla cartella: la distribuzione è `onedir` e contiene DLL e runtime necessari.
 
 I pesi Demucs non sono inclusi e vengono scaricati al primo utilizzo. La disponibilità di CUDA dipende dalla build PyTorch, dal driver NVIDIA e dall'hardware.
 
