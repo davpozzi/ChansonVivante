@@ -104,7 +104,7 @@ class DemucsApp(DemucsBackend):
         self.budget_text = ft.Text("Memoria GPU: 3,0 GB")
         self.budget_slider = ft.Slider(
             min=1, max=12, divisions=22, value=3,
-            on_select=self._budget_changed, expand=True,
+            on_change=self._budget_changed, expand=True,
         )
         self.gpu_info = ft.Text("Rilevamento GPU in corso...", size=12)
         self.status_text = ft.Text(
