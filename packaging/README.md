@@ -4,7 +4,7 @@ Le release si generano dal branch `main` creando e pubblicando un tag Git nel fo
 
 Il workflow `.github/workflows/release-windows.yml` costruisce una distribuzione PyInstaller **onedir**, crea uno ZIP portabile e un installer Inno Setup, quindi pubblica entrambi nella GitHub Release.
 
-Il client desktop Flet viene installato esplicitamente per Windows nella stessa versione di Flet e incluso nel pacchetto. Questo evita un avvio incompleto dell'EXE quando `flet_desktop` non viene rilevato dalla build.
+Il runtime Flet, il CLI di packaging e il client desktop Windows sono bloccati alla stessa versione in `requirements.txt`. Flet 1.1.2 include inoltre le correzioni per l'identità della finestra nella barra delle applicazioni e per la cache del client desktop.
 
 ## Creare una release
 Apri **Releases → Draft a new release**, crea un tag `v1.0.0` scegliendo come target `main`, quindi pubblica. Il workflow si attiva sul tag e carica i due pacchetti.
