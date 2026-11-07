@@ -2,7 +2,7 @@
   #define AppVersion "1.0.0"
 #endif
 #define AppName "ChansonVivante"
-#define AppExeName "app_demucs.exe"
+#define AppExeName "ChansonVivante.exe"
 
 [Setup]
 AppId={{A0E3A27C-7F8A-4B64-A7E6-8D5C7E94A1F2}
@@ -31,7 +31,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "Crea un collegamento sul Desktop"; GroupDescription: "Collegamenti aggiuntivi:"; Flags: unchecked
 
 [Files]
-Source: "..\dist\app_demucs\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\dist\ChansonVivante\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"
