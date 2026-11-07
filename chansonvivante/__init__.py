@@ -1,0 +1,1 @@
+"""ChansonVivante desktop application package."""

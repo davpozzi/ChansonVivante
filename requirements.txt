@@ -1,0 +1,10 @@
+# Core application and audio-separation dependencies
+flet==0.28.3
+soundfile
+demucs
+imageio-ffmpeg
+
+# PyTorch is required by Demucs. Install a build compatible with your hardware
+# and CUDA driver first, following https://pytorch.org/get-started/locally/.
+torch
+torchaudio

@@ -1,0 +1,80 @@
+name: Build Windows release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (for example 1.0.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Resolve release version
+        id: version
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $version = "${{ inputs.version }}"
+            if ($version -notmatch "^v?\d+\.\d+\.\d+([.-][0-9A-Za-z.-]+)?$") { throw "Invalid version" }
+            $version = $version -replace "^v", ""
+          } else { $version = "$env:GITHUB_REF_NAME" -replace "^v", "" }
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Install dependencies and PyInstaller
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller
+
+      - name: Build standalone Windows application
+        run: >-
+          pyinstaller --noconfirm --clean --windowed --onedir
+          --name app_demucs --icon logo.ico --add-data "logo.ico;."
+          --collect-all flet --collect-all flet_desktop
+          --collect-all torch --collect-all torchaudio --collect-all demucs
+          --collect-all soundfile --collect-all imageio_ffmpeg
+          --collect-all huggingface_hub --collect-all safetensors
+          --collect-all omegaconf --hidden-import demucs.api app_demucs.py
+
+      - name: Assemble portable ZIP
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path release/portable | Out-Null
+          Copy-Item -Recurse dist/app_demucs release/portable/ChansonVivante
+          Compress-Archive -Path release/portable/ChansonVivante -DestinationPath "release/ChansonVivante-${{ steps.version.outputs.version }}-windows-x64-portable.zip" -CompressionLevel Optimal
+
+      - name: Build Windows installer
+        shell: pwsh
+        run: |
+          choco install innosetup --yes --no-progress
+          $env:APP_VERSION = "${{ steps.version.outputs.version }}"
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$env:APP_VERSION" installer/ChansonVivante.iss
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed with exit code $LASTEXITCODE" }
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', steps.version.outputs.version) || github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          name: ChansonVivante v${{ steps.version.outputs.version }}
+          generate_release_notes: true
+          files: |
+            release/ChansonVivante-${{ steps.version.outputs.version }}-windows-x64-portable.zip
+            release/setup/ChansonVivante-Setup-${{ steps.version.outputs.version }}.exe
