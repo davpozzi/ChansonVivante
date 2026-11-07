@@ -36,7 +36,7 @@ jobs:
           --product-name ChansonVivante --file-description ChansonVivante
           --product-version "0.0.0"
           --company-name ChansonVivante
-          --add-data "logo.ico:." --hidden-import demucs.api
+          --add-data "logo.ico;." --hidden-import demucs.api
           --pyinstaller-build-args=--clean
           --pyinstaller-build-args=--debug=noarchive
           --pyinstaller-build-args=--collect-all=flet
