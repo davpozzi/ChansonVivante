@@ -45,7 +45,7 @@ jobs:
 
       - name: Build standalone Windows application
         run: >-
-          pyinstaller --noconfirm --clean --windowed --onedir
+          pyinstaller --noconfirm --clean --windowed --onedir --noarchive
           --name ChansonVivante --icon logo.ico --add-data "logo.ico;."
           --collect-all flet --collect-all flet_desktop
           --collect-all torch --collect-all torchaudio --collect-all demucs
