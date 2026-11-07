@@ -43,12 +43,13 @@ async def main(page: ft.Page):
     page.title = "ChansonVivante"
     page.theme_mode = ft.ThemeMode.SYSTEM
     page.padding = 0
-    page.window_width = 900
-    page.window_height = 780
-    page.window_min_width = 840
-    page.window_min_height = 680
-    page.window_resizable = True
-    page.window.icon = str(APP_ROOT / "logo.ico")
+    page.window.width = 900
+    page.window.height = 780
+    page.window.min_width = 840
+    page.window.min_height = 680
+    page.window.resizable = True
+    resource_root = Path(getattr(sys, "_MEIPASS", APP_ROOT))
+    page.window.icon = str(resource_root / "logo.ico")
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
@@ -77,4 +78,4 @@ async def main(page: ft.Page):
 if __name__ == "__main__":
     multiprocessing.freeze_support()
     write_startup_diagnostic()
-    ft.app(target=main)
+    ft.run(main)
