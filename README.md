@@ -21,7 +21,7 @@ Informazioni sul progetto: [www.davidepozzi.it/chansonsvivante](https://www.davi
 - **Separazione:** due tracce (voce e base) oppure quattro stem (voce, batteria, basso e altro).
 - **Accelerazione:** usa CUDA quando disponibile; altrimenti usa la CPU.
 - **Gestione VRAM:** modalità automatica, manuale con slider da 1 a 12 GB, oppure solo CPU. La modalità automatica stima il budget a partire dalla memoria GPU libera. Se si verifica un errore CUDA di memoria, l'app prova segmenti audio progressivamente più corti e infine ripiega sulla CPU.
-- **Interfaccia:** GUI desktop nativa Flet, tema scuro e indicatore di attività durante l'elaborazione. Lo splash viene mostrato prima dell'importazione della UI; il motore AI viene caricato in background mentre l'interfaccia è già visibile. L'icona della finestra usa `logo.ico`.
+- **Interfaccia:** GUI desktop nativa Flet, tema di sistema e indicatore di attività durante l'elaborazione. Lo splash viene mostrato prima dell'importazione della UI; il motore AI viene caricato in background mentre l'interfaccia è già visibile. L'icona della finestra usa `logo.ico`.
 
 > **Importante sulla VRAM:** il budget impostato è un obiettivo indicativo, non un limite rigido. PyTorch, il modello, il driver, Windows e altri programmi possono occupare memoria aggiuntiva. La segmentazione riduce il fabbisogno, ma non garantisce che ogni modello funzioni su qualsiasi GPU; in caso di memoria insufficiente l'app tenta la CPU, che può essere molto più lenta.
 
@@ -30,7 +30,7 @@ Informazioni sul progetto: [www.davidepozzi.it/chansonsvivante](https://www.davi
 ### Requisiti
 
 - Windows per la distribuzione EXE descritta qui sotto.
-- Per eseguire il sorgente: Python e le dipendenze compatibili con il progetto, tra cui Flet 1.1.2, PyTorch, SoundFile, Demucs e imageio-ffmpeg.
+- Per eseguire il sorgente: Python e le dipendenze compatibili con il progetto, tra cui Flet 1.1.2, PyTorch, SoundFile, Demucs, PyYAML e imageio-ffmpeg.
 - FFmpeg è utilizzato da Demucs/imageio-ffmpeg per le operazioni audio che ne richiedono l'eseguibile.
 - Per l'accelerazione NVIDIA è necessaria una build di PyTorch compatibile con CUDA, oltre a GPU e driver compatibili. La sola presenza di una GPU NVIDIA non garantisce che CUDA sia disponibile.
 - Senza CUDA, o selezionando **Solo CPU**, l'elaborazione viene eseguita dal processore.
@@ -44,19 +44,19 @@ Su GitHub apri **Releases → Draft a new release**, crea un tag come `v1.0.0` s
 ### Avvio della versione EXE
 
 1. Estrai tutto il contenuto dello ZIP in una cartella sul computer.
-2. Avvia `app_demucs.exe` da quella cartella.
+2. Avvia `ChansonVivante.exe` da quella cartella.
 3. Non spostare l'EXE fuori dalla cartella estratta: la distribuzione PyInstaller dipende dai file e dalla cartella `_internal` presenti accanto all'eseguibile. Per un collegamento sul Desktop, crea un collegamento all'EXE senza spostarlo.
-4. Seleziona la traccia audio con **Scegli file**.
-5. Scegli la cartella di destinazione con **Scegli cartella**. Per impostazione predefinita viene usata `Downloads/Output_Audio`.
+4. Seleziona la traccia audio con **Sfoglia...**.
+5. Scegli la cartella di destinazione con **Sfoglia...**. Per impostazione predefinita viene usata la cartella dell'applicazione.
 6. Seleziona formato, profondità, modello, shifts e modalità di separazione.
 7. Scegli **Automatica**, **Manuale** (e il budget VRAM) oppure **Solo CPU**.
 8. Premi **Avvia separazione**.
 
-I risultati vengono salvati in una sottocartella con struttura `<destinazione>/<modello>/<nome-traccia>/`. Su Windows l'applicazione tenta di aprire automaticamente la cartella al termine dell'elaborazione.
+I risultati vengono salvati nella sottocartella `<destinazione>/<nome-traccia>/`. Su Windows l'applicazione tenta di aprire automaticamente la cartella al termine dell'elaborazione.
 
 ### Archivio
 
-Il codice applicativo è organizzato nel package `chansonvivante/`: `ui/` contiene la finestra Flet; `services/` separa runtime/configurazione, gestione modelli, pipeline audio/GPU e ponte eventi con la UI. `app_demucs.py` è il punto di ingresso leggero e mostra lo splash prima di importare la UI.
+Il codice applicativo è organizzato nel package `chansonvivante/`: `ui/` contiene la finestra Flet; `services/` separa runtime/configurazione, gestione modelli, pipeline audio/GPU e ponte eventi con la UI. `ChansonVivante.py` è il punto di ingresso leggero e mostra lo splash prima di importare la UI.
 
 ---
 
@@ -100,14 +100,14 @@ On GitHub, open **Releases → Draft a new release**, create a tag such as `v1.0
 1. Extract the entire ZIP archive into a folder on your computer.
 2. Run `app_demucs.exe` from that folder.
 3. Do not move the EXE out of the extracted folder: the PyInstaller distribution relies on the accompanying files and the `_internal` directory. To place it on the Desktop, create a shortcut instead of moving the executable.
-4. Select the source audio track with **Choose file**.
-5. Select the output folder with **Choose folder**. The default is `Downloads/Output_Audio`.
+4. Select the source audio track with **Browse...**.
+5. Select the output folder with **Browse...**. The default is the application folder.
 6. Choose the format, bit depth, model, shifts and separation mode.
 7. Select **Automatic**, **Manual** (and the VRAM budget), or **CPU only**.
 8. Click **Start separation**.
 
-Output files are saved under `<destination>/<model>/<track-name>/`. On Windows, the application attempts to open the output folder when processing finishes.
+Output files are saved under `<destination>/<track-name>/`. On Windows, the application attempts to open the output folder when processing finishes.
 
 ### Archive
 
-The application code is organized in the `chansonvivante/` package: `ui/` contains the Flet window and `services/` handles the Demucs engine, models, GPU and logs. `app_demucs.py` is the lightweight entry point and displays the splash before importing the UI.
+The application code is organized in the `chansonvivante/` package: `ui/` contains the Flet window and `services/` handles the Demucs engine, models, GPU and logs. `ChansonVivante.py` is the lightweight entry point and displays the splash before importing the UI.
