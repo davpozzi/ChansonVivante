@@ -54,7 +54,6 @@ class DemucsApp(DemucsBackend):
     def _build_ui(self):
         self.input_picker = ft.FilePicker()
         self.output_picker = ft.FilePicker()
-        self.page.services.extend([self.input_picker, self.output_picker])
 
         self.input_field = ft.TextField(
             label="File audio", value="", read_only=True, expand=True,
