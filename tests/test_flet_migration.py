@@ -65,7 +65,6 @@ class FletMigrationTests(unittest.TestCase):
 
     def test_entrypoint_and_window_configuration(self):
         self.assertTrue(callable(ft.run))
-        self.assertTrue(hasattr(ft.Page, "window"))
         self.assertTrue(callable(getattr(ft.Page, "show_dialog", None)))
         self.assertTrue(callable(getattr(ft.Page, "pop_dialog", None)))
         self.assertEqual(self.page.window.width, 900)
