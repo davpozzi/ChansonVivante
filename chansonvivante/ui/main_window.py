@@ -52,9 +52,9 @@ class DemucsApp(DemucsBackend):
         self.page.update()
 
     def _build_ui(self):
-        self.input_picker = ft.FilePicker(on_result=self._input_picked)
-        self.output_picker = ft.FilePicker(on_result=self._output_picked)
-        self.page.overlay.extend([self.input_picker, self.output_picker])
+        self.input_picker = ft.FilePicker()
+        self.output_picker = ft.FilePicker()
+        self.page.services.extend([self.input_picker, self.output_picker])
 
         self.input_field = ft.TextField(
             label="File audio", value="", read_only=True, expand=True,
@@ -119,13 +119,10 @@ class DemucsApp(DemucsBackend):
             "Visualizza log", on_click=lambda e: self.open_log_window()
         )
         self.input_browse_button = ft.OutlinedButton(
-            "Sfoglia...", on_click=lambda e: self.input_picker.pick_files(
-                allow_multiple=False,
-                allowed_extensions=["mp3", "wav", "flac", "m4a"],
-            ),
+            "Sfoglia...", on_click=self.browse_input,
         )
         self.output_browse_button = ft.OutlinedButton(
-            "Sfoglia...", on_click=lambda e: self.output_picker.get_directory_path()
+            "Sfoglia...", on_click=self.browse_output
         )
 
         heading = ft.Column(
