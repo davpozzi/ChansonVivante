@@ -1,11 +1,11 @@
 # Release Windows
 
-Le release si generano dal branch `refactor/modular-startup` creando e pubblicando un tag Git nel formato `vX.Y.Z` (ad esempio `v1.0.0`).
+Le release si generano dal branch `main` creando e pubblicando un tag Git nel formato `vX.Y.Z` (ad esempio `v1.0.0`).
 
 Il workflow `.github/workflows/release-windows.yml` costruisce una distribuzione PyInstaller **onedir**, crea uno ZIP portabile e un installer Inno Setup, quindi pubblica entrambi nella GitHub Release.
 
 ## Creare una release
-Apri **Releases → Draft a new release**, crea un tag `v1.0.0` scegliendo come target `refactor/modular-startup`, quindi pubblica. Il workflow si attiva sul tag e carica i due pacchetti.
+Apri **Releases → Draft a new release**, crea un tag `v1.0.0` scegliendo come target `main`, quindi pubblica. Il workflow si attiva sul tag e carica i due pacchetti.
 
 In alternativa, **Actions → Build Windows release → Run workflow** permette di inserire una versione e pubblicare la release dal commit selezionato.
 
