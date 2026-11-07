@@ -5,6 +5,7 @@ flet-desktop==1.1.2; sys_platform == "win32"
 soundfile
 demucs
 imageio-ffmpeg
+PyYAML
 
 # PyTorch is required by Demucs. Install a build compatible with your hardware
 # and CUDA driver first, following https://pytorch.org/get-started/locally/.
