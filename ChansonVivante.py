@@ -1,5 +1,6 @@
 """Entry point leggero: mostra lo splash prima di importare la UI e i servizi."""
 import asyncio
+import multiprocessing
 import sys
 from pathlib import Path
 
@@ -49,4 +50,5 @@ async def main(page: ft.Page):
 
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     ft.app(target=main)
