@@ -75,7 +75,7 @@ Il codice applicativo è organizzato nel package `chansonvivante/`: `ui/` contie
 - **Separation modes:** two stems (vocals and instrumental) or four stems (vocals, drums, bass and other).
 - **Acceleration:** uses CUDA when available; otherwise it uses the CPU.
 - **VRAM management:** automatic mode, manual mode with a 1–12 GB slider, or CPU-only mode. Automatic mode estimates a budget from currently free GPU memory. If a CUDA out-of-memory error occurs, the app retries with progressively shorter audio segments and finally falls back to the CPU.
-- **Interface:** native Flet desktop GUI, dark theme and activity indicator while processing. The splash is displayed before the UI is imported; the AI engine loads in the background while the interface is already visible. The window icon uses `logo.ico`.
+- **Interface:** native Flet desktop GUI, system theme and activity indicator while processing. The splash is displayed before the UI is imported; the AI engine loads in the background while the interface is already visible. The window icon uses `logo.ico`.
 
 > **VRAM note:** the selected budget is a target, not a hard memory cap. PyTorch, the model, the driver, Windows and other applications may allocate additional memory. Segmentation reduces memory demand but cannot guarantee that every model will run on every GPU. If GPU memory remains insufficient, the app attempts CPU processing, which can be much slower.
 
@@ -84,7 +84,7 @@ Il codice applicativo è organizzato nel package `chansonvivante/`: `ui/` contie
 ### Requirements
 
 - Windows for the packaged EXE distribution described below.
-- To run from source: Python and compatible project dependencies, including Flet 1.1.2, PyTorch, SoundFile, Demucs and imageio-ffmpeg.
+- To run from source: Python and compatible project dependencies, including Flet 1.1.2, PyTorch, SoundFile, Demucs, PyYAML and imageio-ffmpeg.
 - FFmpeg is used by Demucs/imageio-ffmpeg for audio operations that require its executable.
 - NVIDIA acceleration requires a PyTorch build compatible with CUDA, as well as a compatible GPU and driver. Having an NVIDIA GPU alone does not guarantee CUDA availability.
 - Without CUDA, or when **CPU-only** is selected, processing runs on the CPU.
@@ -98,7 +98,7 @@ On GitHub, open **Releases → Draft a new release**, create a tag such as `v1.0
 ### Launching the EXE version
 
 1. Extract the entire ZIP archive into a folder on your computer.
-2. Run `app_demucs.exe` from that folder.
+2. Run `ChansonVivante.exe` from that folder.
 3. Do not move the EXE out of the extracted folder: the PyInstaller distribution relies on the accompanying files and the `_internal` directory. To place it on the Desktop, create a shortcut instead of moving the executable.
 4. Select the source audio track with **Browse...**.
 5. Select the output folder with **Browse...**. The default is the application folder.
