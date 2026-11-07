@@ -67,7 +67,7 @@ class FletMigrationTests(unittest.TestCase):
         self.assertTrue(callable(ft.run))
         self.assertTrue(hasattr(ft.Page, "window"))
         self.assertTrue(callable(getattr(ft.Page, "show_dialog", None)))
-        self.assertTrue(callable(getattr(ft.Page, "pop_dialog", None))
+        self.assertTrue(callable(getattr(ft.Page, "pop_dialog", None)))
         self.assertEqual(self.page.window.width, 900)
         self.assertEqual(self.page.window.height, 780)
         self.assertEqual(self.page.window.min_width, 840)
