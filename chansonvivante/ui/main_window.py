@@ -19,11 +19,11 @@ class DemucsApp(DemucsBackend):
         page.padding = 0
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.vertical_alignment = ft.MainAxisAlignment.START
-        page.window_width = 900
-        page.window_height = 780
-        page.window_min_width = 840
-        page.window_min_height = 680
-        page.window_resizable = True
+        page.window.width = 900
+        page.window.height = 780
+        page.window.min_width = 840
+        page.window.min_height = 680
+        page.window.resizable = True
 
         self.input_file = Value("")
         self.output_dir = Value(str(APP_ROOT))
@@ -111,8 +111,8 @@ class DemucsApp(DemucsBackend):
             "Preparazione del motore audio...", size=13, expand=True
         )
         self.progress = ft.ProgressRing(width=18, height=18, stroke_width=2, visible=False)
-        self.start_button = ft.ElevatedButton(
-            "Avvia separazione", on_click=self._start_clicked,
+        self.start_button = ft.Button(
+            content="Avvia separazione", on_click=self._start_clicked,
             height=42, width=210, disabled=True,
         )
         self.logs_button = ft.TextButton(
@@ -208,7 +208,7 @@ class DemucsApp(DemucsBackend):
                     ft.Container(
                         content=content,
                         width=780,
-                        padding=ft.padding.symmetric(horizontal=22, vertical=24),
+                        padding=ft.Padding.symmetric(horizontal=22, vertical=24),
                     )
                 ],
                 expand=True,
