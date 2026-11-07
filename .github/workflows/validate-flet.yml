@@ -25,6 +25,7 @@ jobs:
           python - <<'PY'
           from types import SimpleNamespace
 
+          import flet as ft
           import ChansonVivante
           from chansonvivante.ui.main_window import DemucsApp
 
@@ -41,7 +42,7 @@ jobs:
 
           assert callable(ChansonVivante.main)
 
-          page = FakePage(overlay=[], window=ChansonVivante.ft.Window())
+          page = FakePage(overlay=[], window=ft.Window())
           app = DemucsApp(page)
 
           assert app.start_button.disabled is True
@@ -49,7 +50,7 @@ jobs:
           assert app.model_var.get() == "htdemucs"
           assert app.model_control.value == "Veloce"
           assert app.budget_slider.value == 3
-          assert app.input_browse_button.text == "Sfoglia..."
+          assert app.input_browse_button.content == "Sfoglia..."
           assert len(page.overlay) == 2
 
           print("Modular Flet application imported and UI controls constructed successfully")
