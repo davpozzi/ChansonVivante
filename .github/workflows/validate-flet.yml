@@ -42,7 +42,7 @@ jobs:
 
           assert callable(ChansonVivante.main)
 
-          page = FakePage(overlay=[], window=ft.Window())
+          page = FakePage(services=[], window=ft.Window())
           app = DemucsApp(page)
 
           assert app.start_button.disabled is True
@@ -51,7 +51,7 @@ jobs:
           assert app.model_control.value == "Veloce"
           assert app.budget_slider.value == 3
           assert app.input_browse_button.content == "Sfoglia..."
-          assert len(page.overlay) == 2
+          assert len(page.services) == 2
 
           print("Modular Flet application imported and UI controls constructed successfully")
           PY
