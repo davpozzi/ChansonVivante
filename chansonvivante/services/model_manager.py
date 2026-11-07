@@ -19,6 +19,14 @@ class ModelManagerMixin:
         try:
             import soundfile as soundfile_module
             import torch as torch_module
+            # Imposta limiti espliciti: il default può essere molto aggressivo sui PC
+            # con molti core logici. Demucs non ha bisogno di centinaia di worker.
+            torch_module.set_num_threads(4)
+            try:
+                torch_module.set_num_interop_threads(1)
+            except RuntimeError:
+                # PyTorch consente di impostarlo solo prima dell'avvio del pool.
+                pass
             import demucs as demucs_module
             import demucs.api  # noqa: F401
             import imageio_ffmpeg

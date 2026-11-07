@@ -5,6 +5,12 @@ import os
 import queue
 import sys
 import threading
+
+# Limita il numero di thread delle librerie numeriche prima di importare PyTorch.
+# Evita che BLAS/OpenMP saturino CPU e memoria su PC Windows con molti core.
+for _thread_var in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS", "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS"):
+    os.environ[_thread_var] = "4"
+os.environ.setdefault("OMP_WAIT_POLICY", "PASSIVE")
 from pathlib import Path
 from urllib.parse import urlparse
 
