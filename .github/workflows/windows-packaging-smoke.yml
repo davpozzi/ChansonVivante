@@ -74,9 +74,15 @@ jobs:
             Write-Host "$property = $actual"
           }
 
-          if (-not (Test-Path "dist\ChansonVivante\logo.ico")) {
-            throw "Application icon was not included in the packaged directory."
+          $iconCandidates = @(
+            "dist\ChansonVivante\logo.ico",
+            "dist\ChansonVivante\_internal\logo.ico"
+          )
+          $bundledIcon = $iconCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $bundledIcon) {
+            throw "Application icon was not included in the packaged directory (checked root and _internal)."
           }
+          Write-Host "Bundled application icon: $bundledIcon"
           Write-Host "Windows package smoke test passed ($($file.Length) bytes)."
 
       - name: Upload packaged application for inspection
