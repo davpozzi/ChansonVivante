@@ -73,12 +73,12 @@ class UIQueueMixin:
 
     def _confirm(self, title, message, yes_callback):
         def yes(e):
-            self.page.close(dlg)
+            self.page.pop_dialog()
             yes_callback()
         dlg = ft.AlertDialog(title=ft.Text(title), content=ft.Text(message),
-            actions=[ft.TextButton(content="Annulla", on_click=lambda e: self.page.close(dlg)),
+            actions=[ft.TextButton(content="Annulla", on_click=lambda e: self.page.pop_dialog()),
                      ft.FilledButton(content="Sì", on_click=yes)])
-        self.page.open(dlg)
+        self.page.show_dialog(dlg)
 
     def _start_clicked(self, e):
         self.start_thread()
@@ -138,7 +138,7 @@ class UIQueueMixin:
 
     def open_log_window(self):
         if self.log_window is not None:
-            self.page.open(self.log_window)
+            self.page.show_dialog(self.log_window)
             return
         self.log_content = ft.TextField(value="", multiline=True, min_lines=15,
             max_lines=24, read_only=True, text_size=12, expand=True,
@@ -148,10 +148,10 @@ class UIQueueMixin:
             content=ft.Container(content=self.log_content, width=760, height=430),
             actions=[
                 ft.TextButton(content="Svuota log", on_click=lambda e: self.clear_log()),
-                ft.TextButton(content="Chiudi", on_click=lambda e: self.page.close(dlg)),
+                ft.TextButton(content="Chiudi", on_click=lambda e: self.page.pop_dialog()),
             ])
         self.log_window = dlg
-        self.page.open(dlg)
+        self.page.show_dialog(dlg)
         self._refresh_log_view()
 
     def append_log(self, level, message):
