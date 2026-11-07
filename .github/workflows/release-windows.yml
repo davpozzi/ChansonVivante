@@ -45,13 +45,21 @@ jobs:
 
       - name: Build standalone Windows application
         run: >-
-          pyinstaller --noconfirm --clean --windowed --onedir --debug=noarchive
-          --name ChansonVivante --icon logo.ico --add-data "logo.ico;."
-          --collect-all flet --collect-all flet_desktop
-          --collect-all torch --collect-all torchaudio --collect-all demucs
-          --collect-all soundfile --collect-all imageio_ffmpeg
-          --collect-all huggingface_hub --collect-all safetensors
-          --collect-all omegaconf --hidden-import demucs.api ChansonVivante.py
+          flet pack ChansonVivante.py --yes --onedir
+          --name ChansonVivante --icon logo.ico
+          --add-data "logo.ico;." --hidden-import demucs.api
+          --pyinstaller-build-args=--clean
+          --pyinstaller-build-args=--debug=noarchive
+          --pyinstaller-build-args=--collect-all flet
+          --pyinstaller-build-args=--collect-all flet_desktop
+          --pyinstaller-build-args=--collect-all torch
+          --pyinstaller-build-args=--collect-all torchaudio
+          --pyinstaller-build-args=--collect-all demucs
+          --pyinstaller-build-args=--collect-all soundfile
+          --pyinstaller-build-args=--collect-all imageio_ffmpeg
+          --pyinstaller-build-args=--collect-all huggingface_hub
+          --pyinstaller-build-args=--collect-all safetensors
+          --pyinstaller-build-args=--collect-all omegaconf
 
       - name: Verify portable executable
         shell: pwsh
