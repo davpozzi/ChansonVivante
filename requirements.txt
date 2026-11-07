@@ -1,7 +1,9 @@
 # Core application and audio-separation dependencies
-# Flet 1.x includes the current CLI and desktop client through the all extra.
-# This version includes the Windows taskbar identity and client-cache fixes.
-flet[all]==1.1.2
+# Pin the Flet runtime, CLI and desktop client together. Flet 1.1.2 includes
+# the Windows taskbar identity, relaunch properties and client-cache fixes.
+flet==1.1.2
+flet-cli==1.1.2
+flet-desktop==1.1.2; sys_platform == "win32"
 soundfile
 demucs
 imageio-ffmpeg
