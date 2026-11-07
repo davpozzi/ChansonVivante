@@ -1,7 +1,9 @@
 """Entry point leggero: mostra lo splash prima di importare la UI e i servizi."""
 import asyncio
 import multiprocessing
+import os
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import flet as ft
@@ -12,6 +14,29 @@ APP_ROOT = (
     if getattr(sys, "frozen", False)
     else Path(__file__).parent.resolve()
 )
+
+
+def write_startup_diagnostic():
+    """Registra i dati minimi del processo per diagnosticare avvii duplicati su Windows."""
+    try:
+        local_data = Path(
+            os.environ.get("LOCALAPPDATA", str(Path.home() / "AppData" / "Local"))
+        )
+        log_dir = local_data / "ChansonVivante" / "logs"
+        log_dir.mkdir(parents=True, exist_ok=True)
+        children = multiprocessing.active_children()
+        line = (
+            f"{datetime.now().astimezone().isoformat()} "
+            f"pid={os.getpid()} ppid={os.getppid()} "
+            f"frozen={getattr(sys, 'frozen', False)} "
+            f"executable={sys.executable!r} "
+            f"active_children={len(children)}\n"
+        )
+        with (log_dir / "startup.log").open("a", encoding="utf-8") as log:
+            log.write(line)
+    except Exception:
+        # La diagnostica non deve mai impedire l'avvio dell'applicazione.
+        pass
 
 
 async def main(page: ft.Page):
@@ -51,4 +76,5 @@ async def main(page: ft.Page):
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()
+    write_startup_diagnostic()
     ft.app(target=main)
