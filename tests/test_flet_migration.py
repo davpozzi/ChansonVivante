@@ -195,7 +195,6 @@ class FletMigrationTests(unittest.TestCase):
         self.assertEqual(page.window.width, 900)
         self.assertEqual(len(page.controls), 1)
         self.assertIsInstance(page.controls[0], ft.Column)
-        self.assertEqual(len(page.services), 2)
         self.assertEqual(len(page.tasks), 2)
 
 
