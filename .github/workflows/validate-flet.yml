@@ -20,25 +20,38 @@ jobs:
       - name: Install UI dependencies
         run: python -m pip install flet==0.28.3 PyYAML
       - name: Compile application
-        run: python -m py_compile app_demucs.py app_flet.py app_flet_clean.py chansonvivante/__init__.py chansonvivante/services/*.py chansonvivante/ui/main_window.py
+        run: python -m compileall -q app_demucs.py chansonvivante
       - name: Import application and construct Flet controls
         run: |
           python - <<'PY'
           from types import SimpleNamespace
-          import app_flet_clean
+
+          import app_demucs
+          from chansonvivante.ui.main_window import DemucsApp
 
           class FakePage(SimpleNamespace):
-              def add(self, *controls): pass
-              def update(self): pass
-              def run_task(self, handler, *args): pass
+              def add(self, *controls):
+                  pass
+
+              def update(self):
+                  pass
+
+              def run_task(self, handler, *args):
+                  # Non avvia i task asincroni né il caricamento del motore AI.
+                  pass
+
+          assert callable(app_demucs.main)
 
           page = FakePage(overlay=[])
-          app = app_flet_clean.DemucsApp(page)
+          app = DemucsApp(page)
+
           assert app.start_button.disabled is True
           assert app.format_control.value == "flac"
           assert app.model_var.get() == "htdemucs"
           assert app.model_control.value == "Veloce"
           assert app.budget_slider.value == 3
           assert app.input_browse_button.text == "Sfoglia..."
-          print("Clean Flet UI controls constructed successfully")
+          assert len(page.overlay) == 2
+
+          print("Modular Flet application imported and UI controls constructed successfully")
           PY
