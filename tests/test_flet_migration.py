@@ -238,6 +238,37 @@ class FletMigrationTests(unittest.TestCase):
         thread.return_value.start.assert_called_once()
         self.assertTrue(self.app.start_button.disabled)
 
+    def test_gpu_budget_modes_keep_auto_manual_and_cpu_behavior(self):
+        with patch(
+            "chansonvivante.services.audio_processor.available_cuda_memory",
+            return_value=(8.0, 12.0),
+        ):
+            cpu_budget, cpu_message = self.app.choose_gpu_budget({
+                "device_mode": "Solo CPU", "budget_gb": 5.5,
+            })
+            manual_budget, manual_message = self.app.choose_gpu_budget({
+                "device_mode": "Manuale", "budget_gb": 5.5,
+            })
+            automatic_budget, automatic_message = self.app.choose_gpu_budget({
+                "device_mode": "Automatica", "budget_gb": 5.5,
+            })
+
+        self.assertIsNone(cpu_budget)
+        self.assertIn("CPU", cpu_message)
+        self.assertEqual(manual_budget, 5.5)
+        self.assertIn("manuale", manual_message.lower())
+        self.assertAlmostEqual(automatic_budget, 6.56, places=2)
+        self.assertIn("automatica", automatic_message.lower())
+
+        with patch(
+            "chansonvivante.services.audio_processor.available_cuda_memory",
+            return_value=(0.5, 12.0),
+        ):
+            low_memory_budget, _ = self.app.choose_gpu_budget({
+                "device_mode": "Automatica", "budget_gb": 5.5,
+            })
+        self.assertIsNone(low_memory_budget)
+
     def test_gpu_mode_controls_manual_budget_availability(self):
         self.app.has_cuda = True
         self.app.device_mode_var.set("Manuale")
