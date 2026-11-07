@@ -17,4 +17,6 @@ In alternativa, **Actions → Build Windows release → Run workflow** permette 
 
 I pesi Demucs non sono inclusi e vengono scaricati al primo utilizzo. La disponibilità di CUDA dipende dalla build PyTorch, dal driver NVIDIA e dall'hardware.
 
-La pipeline di release è per Windows x64. La build di release parte quando viene pubblicato un tag, non a ogni push sul branch.\n\nLa PR esegue inoltre `.github/workflows/windows-packaging-smoke.yml` su un runner Windows: installa le dipendenze, crea il pacchetto `onedir` con gli stessi argomenti PyInstaller della release e verifica EXE, metadati versione Windows e presenza dell'icona. Il pacchetto viene conservato come artifact per 7 giorni. Questo test non pubblica tag o release e non sostituisce la verifica visiva di taskbar e titlebar su un desktop Windows.
+La pipeline di release è per Windows x64. La build di release parte quando viene pubblicato un tag, non a ogni push sul branch.
+
+La PR esegue inoltre `.github/workflows/windows-packaging-smoke.yml` su un runner Windows: installa le dipendenze, crea il pacchetto `onedir` con gli stessi argomenti PyInstaller della release e verifica EXE, metadati versione Windows e presenza dell'icona. Il pacchetto viene conservato come artifact per 7 giorni. Questo test non pubblica tag o release e non sostituisce la verifica visiva di taskbar e titlebar su un desktop Windows.
