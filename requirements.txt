@@ -1,11 +1,11 @@
-# Core application and audio-separation dependencies
-flet==0.28.3
-# Flet 0.28.3 keeps the native desktop client in a separate package.
-# The Windows portable build needs it explicitly.
-flet-desktop==0.28.3; sys_platform == "win32"
+# Keep the Flet runtime, CLI and desktop client on the same tested release.
+flet==1.1.2
+flet-cli==1.1.2
+flet-desktop==1.1.2; sys_platform == "win32"
 soundfile
 demucs
 imageio-ffmpeg
+PyYAML
 
 # PyTorch is required by Demucs. Install a build compatible with your hardware
 # and CUDA driver first, following https://pytorch.org/get-started/locally/.

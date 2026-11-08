@@ -49,6 +49,7 @@ jobs:
           --name ChansonVivante --icon logo.ico
           --product-name ChansonVivante --file-description ChansonVivante
           --company-name ChansonVivante
+          --product-version "${{ steps.version.outputs.version }}"
           --add-data "logo.ico;." --hidden-import demucs.api
           --pyinstaller-build-args=--clean
           --pyinstaller-build-args=--debug=noarchive

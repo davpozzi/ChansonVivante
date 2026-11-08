@@ -66,31 +66,19 @@ class UIQueueMixin:
             self.page.update()
             await asyncio.sleep(0.1)
 
-    def _input_picked(self, e):
-        if e.files:
-            self.input_file.set(e.files[0].path)
-            self.input_field.value = e.files[0].path
-            self.page.update()
-
-    def _output_picked(self, e):
-        if e.path:
-            self.output_dir.set(e.path)
-            self.output_field.value = e.path
-            self.page.update()
-
     def _message(self, title, message):
         dlg = ft.AlertDialog(title=ft.Text(title), content=ft.Text(message),
-            actions=[ft.TextButton("OK", on_click=lambda e: self.page.close(dlg))])
-        self.page.open(dlg)
+            actions=[ft.TextButton(content="OK", on_click=lambda e: self.page.pop_dialog())])
+        self.page.show_dialog(dlg)
 
     def _confirm(self, title, message, yes_callback):
         def yes(e):
-            self.page.close(dlg)
+            self.page.pop_dialog()
             yes_callback()
         dlg = ft.AlertDialog(title=ft.Text(title), content=ft.Text(message),
-            actions=[ft.TextButton("Annulla", on_click=lambda e: self.page.close(dlg)),
-                     ft.FilledButton("Sì", on_click=yes)])
-        self.page.open(dlg)
+            actions=[ft.TextButton(content="Annulla", on_click=lambda e: self.page.pop_dialog()),
+                     ft.FilledButton(content="Sì", on_click=yes)])
+        self.page.show_dialog(dlg)
 
     def _start_clicked(self, e):
         self.start_thread()
@@ -150,7 +138,7 @@ class UIQueueMixin:
 
     def open_log_window(self):
         if self.log_window is not None:
-            self.page.open(self.log_window)
+            self.page.show_dialog(self.log_window)
             return
         self.log_content = ft.TextField(value="", multiline=True, min_lines=15,
             max_lines=24, read_only=True, text_size=12, expand=True,
@@ -159,11 +147,11 @@ class UIQueueMixin:
             modal=False, title=ft.Text("ChansonVivante · Log elaborazione"),
             content=ft.Container(content=self.log_content, width=760, height=430),
             actions=[
-                ft.TextButton("Svuota log", on_click=lambda e: self.clear_log()),
-                ft.TextButton("Chiudi", on_click=lambda e: self.page.close(dlg)),
+                ft.TextButton(content="Svuota log", on_click=lambda e: self.clear_log()),
+                ft.TextButton(content="Chiudi", on_click=lambda e: self.page.pop_dialog()),
             ])
         self.log_window = dlg
-        self.page.open(dlg)
+        self.page.show_dialog(dlg)
         self._refresh_log_view()
 
     def append_log(self, level, message):
@@ -204,14 +192,14 @@ class UIQueueMixin:
         manual = self.device_mode_var.get() == "Manuale"
         self.budget_slider.disabled = not (manual and self.has_cuda)
         options = ["Automatica", "Manuale", "Solo CPU"] if self.has_cuda else ["Automatica", "Solo CPU"]
-        self.device_control.options = [ft.dropdown.Option(x) for x in options]
+        self.device_control.options = [ft.DropdownOption(key=x, text=x) for x in options]
         if not self.has_cuda and self.device_mode_var.get() == "Manuale":
             self.device_mode_var.set("Automatica")
             self.device_control.value = "Automatica"
 
     def set_running_state(self, running):
         self.start_button.disabled = running or not self.ai_ready
-        self.start_button.text = "Elaborazione in corso..." if running else "Avvia separazione"
+        self.start_button.content = "Elaborazione in corso..." if running else "Avvia separazione"
         for control in [self.input_field, self.output_field, self.format_control,
                         self.bit_control, self.model_control, self.shifts_control,
                         self.stems_control, self.device_control, self.budget_slider,
@@ -220,9 +208,22 @@ class UIQueueMixin:
         self.progress.visible = running
         self.page.update()
 
-    def browse_input(self):
-        self.input_picker.pick_files(allow_multiple=False,
-            allowed_extensions=["mp3", "wav", "flac", "m4a"])
+    async def browse_input(self):
+        files = await self.input_picker.pick_files(
+            allow_multiple=False,
+            file_type=ft.FilePickerFileType.CUSTOM,
+            allowed_extensions=["mp3", "wav", "flac", "m4a"],
+        )
+        if files:
+            selected_path = files[0].path
+            if selected_path:
+                self.input_file.set(selected_path)
+                self.input_field.value = selected_path
+                self.page.update()
 
-    def browse_output(self):
-        self.output_picker.get_directory_path()
+    async def browse_output(self):
+        selected_path = await self.output_picker.get_directory_path()
+        if selected_path:
+            self.output_dir.set(selected_path)
+            self.output_field.value = selected_path
+            self.page.update()

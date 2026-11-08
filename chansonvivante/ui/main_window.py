@@ -19,11 +19,11 @@ class DemucsApp(DemucsBackend):
         page.padding = 0
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.vertical_alignment = ft.MainAxisAlignment.START
-        page.window_width = 900
-        page.window_height = 780
-        page.window_min_width = 840
-        page.window_min_height = 680
-        page.window_resizable = True
+        page.window.width = 900
+        page.window.height = 780
+        page.window.min_width = 840
+        page.window.min_height = 680
+        page.window.resizable = True
 
         self.input_file = Value("")
         self.output_dir = Value(str(APP_ROOT))
@@ -52,9 +52,8 @@ class DemucsApp(DemucsBackend):
         self.page.update()
 
     def _build_ui(self):
-        self.input_picker = ft.FilePicker(on_result=self._input_picked)
-        self.output_picker = ft.FilePicker(on_result=self._output_picked)
-        self.page.overlay.extend([self.input_picker, self.output_picker])
+        self.input_picker = ft.FilePicker()
+        self.output_picker = ft.FilePicker()
 
         self.input_field = ft.TextField(
             label="File audio", value="", read_only=True, expand=True,
@@ -68,38 +67,47 @@ class DemucsApp(DemucsBackend):
 
         self.format_control = ft.Dropdown(
             label="Formato", value="flac", expand=True,
-            options=[ft.dropdown.Option(x) for x in ("flac", "wav", "mp3")],
-            on_change=lambda e: self.format_var.set(e.control.value),
+            options=[ft.DropdownOption(key=x, text=x) for x in ("flac", "wav", "mp3")],
+            on_select=lambda e: self.format_var.set(e.control.value),
         )
         self.bit_control = ft.Dropdown(
             label="Qualità", value="16-bit", expand=True,
-            options=[ft.dropdown.Option(x) for x in ("16-bit", "24-bit")],
-            on_change=lambda e: self.bit_var.set(e.control.value),
+            options=[ft.DropdownOption(key=x, text=x) for x in ("16-bit", "24-bit")],
+            on_select=lambda e: self.bit_var.set(e.control.value),
         )
         self.model_control = ft.Dropdown(
             label="Modalità", value="Veloce", expand=True,
-            options=[ft.dropdown.Option("Veloce"), ft.dropdown.Option("Approfondita")],
-            on_change=self._model_mode_changed,
+            options=[
+                ft.DropdownOption(key="Veloce", text="Veloce"),
+                ft.DropdownOption(key="Approfondita", text="Approfondita"),
+            ],
+            on_select=self._model_mode_changed,
         )
         self.shifts_control = ft.Dropdown(
             label="Precisione", value="1 (Standard)", expand=True,
-            options=[ft.dropdown.Option(x) for x in (
+            options=[ft.DropdownOption(key=x, text=x) for x in (
                 "0 (Veloce)", "1 (Standard)", "2 (Preciso)", "3 (Lento)"
             )],
-            on_change=lambda e: self.shifts_var.set(e.control.value),
+            on_select=lambda e: self.shifts_var.set(e.control.value),
         )
         self.stems_control = ft.Dropdown(
             label="Tracce da generare", value=self.stems_var.get(), expand=True,
             options=[
-                ft.dropdown.Option("Solo Voce e Base (2 tracce)"),
-                ft.dropdown.Option("Tutti gli strumenti (4 tracce)"),
+                ft.DropdownOption(
+                    key="Solo Voce e Base (2 tracce)",
+                    text="Solo Voce e Base (2 tracce)",
+                ),
+                ft.DropdownOption(
+                    key="Tutti gli strumenti (4 tracce)",
+                    text="Tutti gli strumenti (4 tracce)",
+                ),
             ],
-            on_change=lambda e: self.stems_var.set(e.control.value),
+            on_select=lambda e: self.stems_var.set(e.control.value),
         )
         self.device_control = ft.Dropdown(
             label="Modalità di elaborazione", value="Automatica", width=250,
-            options=[ft.dropdown.Option(x) for x in ("Automatica", "Manuale", "Solo CPU")],
-            on_change=self._device_changed,
+            options=[ft.DropdownOption(key=x, text=x) for x in ("Automatica", "Manuale", "Solo CPU")],
+            on_select=self._device_changed,
         )
         self.budget_text = ft.Text("Memoria GPU: 3,0 GB")
         self.budget_slider = ft.Slider(
@@ -111,21 +119,18 @@ class DemucsApp(DemucsBackend):
             "Preparazione del motore audio...", size=13, expand=True
         )
         self.progress = ft.ProgressRing(width=18, height=18, stroke_width=2, visible=False)
-        self.start_button = ft.ElevatedButton(
-            "Avvia separazione", on_click=self._start_clicked,
+        self.start_button = ft.Button(
+            content="Avvia separazione", on_click=self._start_clicked,
             height=42, width=210, disabled=True,
         )
         self.logs_button = ft.TextButton(
-            "Visualizza log", on_click=lambda e: self.open_log_window()
+            content="Visualizza log", on_click=lambda e: self.open_log_window()
         )
         self.input_browse_button = ft.OutlinedButton(
-            "Sfoglia...", on_click=lambda e: self.input_picker.pick_files(
-                allow_multiple=False,
-                allowed_extensions=["mp3", "wav", "flac", "m4a"],
-            ),
+            content="Sfoglia...", on_click=self.browse_input,
         )
         self.output_browse_button = ft.OutlinedButton(
-            "Sfoglia...", on_click=lambda e: self.output_picker.get_directory_path()
+            content="Sfoglia...", on_click=self.browse_output,
         )
 
         heading = ft.Column(
@@ -208,7 +213,7 @@ class DemucsApp(DemucsBackend):
                     ft.Container(
                         content=content,
                         width=780,
-                        padding=ft.padding.symmetric(horizontal=22, vertical=24),
+                        padding=ft.Padding.symmetric(horizontal=22, vertical=24),
                     )
                 ],
                 expand=True,
