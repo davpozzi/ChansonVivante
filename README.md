@@ -33,7 +33,9 @@ ChansonVivante rende Demucs accessibile attraverso una semplice interfaccia graf
 
 ## Screenshot
 
-![ChansonVivante](docs/screenshot.png)
+<img width="1055" height="1265" alt="image" src="https://github.com/user-attachments/assets/ea6fc0e4-e63e-42c5-a4ab-c5a6f4a65a1d" />
+
+<img width="1050" height="1253" alt="image" src="https://github.com/user-attachments/assets/9d0b92d5-b93c-43a3-8d5c-0eae7962e932" />
 
 ## Download
 
@@ -258,7 +260,9 @@ ChansonVivante makes Demucs accessible through a simple Windows graphical interf
 > 
 ## Screenshot
 
-![ChansonVivante](docs/screenshot.png)
+<img width="1055" height="1265" alt="image" src="https://github.com/user-attachments/assets/ea6fc0e4-e63e-42c5-a4ab-c5a6f4a65a1d" />
+
+<img width="1050" height="1253" alt="image" src="https://github.com/user-attachments/assets/9d0b92d5-b93c-43a3-8d5c-0eae7962e932" />
 
 ## Download
 
