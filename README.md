@@ -1,6 +1,6 @@
 # ChansonVivante
 
-Informazioni sul progetto: [www.davidepozzi.it/ChansonVivante](https://www.davidepozzi.it/ChansonVivante)
+Informazioni sul progetto:[ [www.davidepozzi.it/ChansonVivante](https://www.davidepozzi.it/ChansonVivante)](https://www.davidepozzi.it/chansonvivante)
 
 🇮🇹 **Italiano** | 🇬🇧 **English**
 
