@@ -1,6 +1,6 @@
-# ChansonsVivante
+# chansonVivante
 
-Informazioni sul progetto: [www.davidepozzi.it/chansonsvivante](https://www.davidepozzi.it/chansonsvivante)
+Informazioni sul progetto: [www.davidepozzi.it/chansonvivante](https://www.davidepozzi.it/chansonvivante)
 
 🇮🇹 **Italiano** | 🇬🇧 **English**
 
@@ -10,7 +10,7 @@ Informazioni sul progetto: [www.davidepozzi.it/chansonsvivante](https://www.davi
 
 ### Cos'è questo programma?
 
-**ChansonsVivante** è un'applicazione desktop con interfaccia grafica basata sul motore open-source [Demucs](https://github.com/facebookresearch/demucs). Permette di separare una traccia audio nelle sue componenti: voce, batteria, basso e altri strumenti, oppure di ottenere due tracce (voce e base strumentale).
+**chansonVivante** è un'applicazione desktop con interfaccia grafica basata sul motore open-source [Demucs](https://github.com/facebookresearch/demucs). Permette di separare una traccia audio nelle sue componenti: voce, batteria, basso e altri strumenti, oppure di ottenere due tracce (voce e base strumentale).
 
 ### Funzionalità
 
@@ -64,7 +64,7 @@ Il codice applicativo è organizzato nel package `chansonvivante/`: `ui/` contie
 
 ### What is this software?
 
-**ChansonsVivante** is a desktop application with a graphical interface powered by the open-source [Demucs](https://github.com/facebookresearch/demucs) engine. It separates an audio track into vocals, drums, bass and other instruments, or creates two outputs (vocals and instrumental accompaniment).
+**chansonVivante** is a desktop application with a graphical interface powered by the open-source [Demucs](https://github.com/facebookresearch/demucs) engine. It separates an audio track into vocals, drums, bass and other instruments, or creates two outputs (vocals and instrumental accompaniment).
 
 ### Features
 
