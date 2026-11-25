@@ -1,4 +1,4 @@
-# 🎵 ChansonsVivante
+# ChansonsVivante
 
 Informazioni sul progetto: [www.davidepozzi.it/chansonsvivante](https://www.davidepozzi.it/chansonsvivante)
 
