@@ -10,7 +10,7 @@ Informazioni sul progetto: [www.davidepozzi.it/ChansonVivante](https://www.david
 
 **ChansonVivante** è un'applicazione desktop con interfaccia grafica basata sul modello AI open-source [Demucs](https://github.com/facebookresearch/demucs).
 
-Permette di separare una traccia audio nelle sue componenti — **voce, batteria, basso e altri strumenti** — oppure di ottenere due tracce: **voce e base strumentale**.
+Permette di separare una traccia audio nelle sue componenti (**voce, batteria, basso e altri strumenti**) oppure di ottenere due tracce: **voce e base strumentale**.
 
 ChansonVivante rende Demucs accessibile attraverso una semplice interfaccia grafica per Windows, senza bisogno di utilizzare la riga di comando.
 
@@ -191,13 +191,13 @@ Il primo avvio di una determinata configurazione può quindi richiedere più tem
 ChansonVivante utilizza principalmente:
 
 - **Python**
-- **Flet** — interfaccia grafica desktop
-- **PyTorch** — elaborazione tramite modelli neurali
-- **Demucs** — separazione audio
-- **SoundFile / libsndfile** — lettura e scrittura audio
-- **imageio-ffmpeg** — gestione di FFmpeg
-- **PyInstaller** — packaging dell'applicazione Windows
-- **Inno Setup** — installer Windows
+- **Flet** - interfaccia grafica desktop
+- **PyTorch** - elaborazione tramite modelli neurali
+- **Demucs** - separazione audio
+- **SoundFile / libsndfile** - lettura e scrittura audio
+- **imageio-ffmpeg** - gestione di FFmpeg
+- **PyInstaller** - packaging dell'applicazione Windows
+- **Inno Setup** - installer Windows
 
 ## Struttura del progetto
 
@@ -235,7 +235,7 @@ Un ringraziamento agli sviluppatori e ai contributori dei progetti open-source u
 
 **ChansonVivante** is a desktop application with a graphical user interface built around the open-source AI model [Demucs](https://github.com/facebookresearch/demucs).
 
-It allows you to separate an audio track into its individual components — **vocals, drums, bass and other instruments** — or produce two tracks: **vocals and instrumental**.
+It allows you to separate an audio track into its individual components (**vocals, drums, bass and other instruments**) or produce two tracks: **vocals and instrumental**.
 
 ChansonVivante makes Demucs accessible through a simple Windows graphical interface, without requiring command-line usage.
 
@@ -416,13 +416,13 @@ The first run with a particular model may therefore take longer than subsequent 
 ChansonVivante is mainly built with:
 
 - **Python**
-- **Flet** — desktop graphical interface
-- **PyTorch** — neural model processing
-- **Demucs** — audio source separation
-- **SoundFile / libsndfile** — audio reading and writing
-- **imageio-ffmpeg** — FFmpeg management
-- **PyInstaller** — Windows application packaging
-- **Inno Setup** — Windows installer
+- **Flet** - desktop graphical interface
+- **PyTorch** - neural model processing
+- **Demucs** - audio source separation
+- **SoundFile / libsndfile** - audio reading and writing
+- **imageio-ffmpeg** - FFmpeg management
+- **PyInstaller** - Windows application packaging
+- **Inno Setup** - Windows installer
 
 ## Project structure
 
